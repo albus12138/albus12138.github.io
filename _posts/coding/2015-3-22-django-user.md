@@ -20,6 +20,7 @@ description: 自己折腾Django用户系统的一点记录，也希望能帮助�
 accounts是我app的名称，你可以改为你的app名称。
 
 {% highlight python %}
+# /mysite/accounts/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
