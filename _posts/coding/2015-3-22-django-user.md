@@ -42,6 +42,7 @@ class CustomUser(AbstractUser, models.Model):
 做完这些，你会发现通过admin添加的用户无法登陆，这是因为Django在数据库中对密码进行了加密存储，不必担心，Django提供了make_password这个方法，你可以通过重写CustomUser.save_model来覆盖掉原有的行为
 
 {% highlight python %}
+# /mysite/accounts/admin.py
 class CustomUserAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if 'pbkdf2_sha256$12000$' != request.POST["password"][:20]: #判断是否已经被加密，这里我只是检验了加密的标识，如果有更好的处理方法欢迎给我发送email:albus.zly@gmail.com
@@ -54,6 +55,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 这时候，你已经可以使用你通过admin添加的用户登录到后台了~但是，我们还没有实现动态验证的功能，首先要修改登录页"admin/login.html"的模版来添加一个输入框，下面这段代码添加到login.html中password的后面。
 
 {% highlight html %}
+<!-- /django/contrib/admin/templates/admin/login.html -->
 <div class="form-row">
     {{ form.token.errors }}
     <label for="id_token" class="required">{{ form.token.label }}:</label> {{ form.token }}
@@ -63,6 +65,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 现在还不能看到添加的输入框，因为form中并没有定义token字段，你还要扩展一下登录表单，只需要继承AuthenticationForm就可以了。
 
 {% highlight python %}
+# /mysite/accounts/forms.py
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.contrib.auth import authenticate
@@ -98,6 +101,7 @@ class CustomAuthenticationForm(AuthenticationForm, forms.Form):
 你现在应该修改urls来告诉Django你要使用自己的模版~在这里偷一下懒→_→需要了解关于修改模版的同学请移步[这里][]
 
 {% highlight python %}
+# /mysite/urls.py
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
@@ -124,6 +128,7 @@ urlpatterns = patterns('',
 > AUTHENTICATION_BACKENDS = ('accounts.backends.CustomBackend',)
 
 {% highlight python %}
+# /mysite/accounts/backends.py
 from accounts.models import CustomUser
 from django.utils import timezone
 
