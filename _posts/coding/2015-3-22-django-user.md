@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Django用户系统扩展笔记
+title:      Django用户系统扩展
 category: coding
 description: 自己折腾Django用户系统的一点记录，也希望能帮助其他有同样问题的人~
 ---
