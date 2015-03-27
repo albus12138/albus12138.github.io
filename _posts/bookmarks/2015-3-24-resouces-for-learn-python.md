@@ -17,7 +17,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### 笨办法学 Python
 
-<img src="/images/resouces-for-learn-python/笨方法学Python.JPG" alt="笨方法学Python">
+<img src="/images/resouces-for-learn-python/笨办法学Python.JPG" alt="笨方法学Python">
 
 　　这本书绝对是最简单的学习 Python 的方法。你会被如此简单的基础学习感到震惊，你会真实地感受到自己的学习进程，一步步的获取新的知识。我也了解到它非常鼓励 学习者取尝试并创造自己的程序。
 
@@ -45,7 +45,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### The Python Challenge
 
-<img src="/images/resouces-for-learn-python/The Python-Challenge.JPG" alt="The Python Challenge">
+<img src="/images/resouces-for-learn-python/The-Python-Challenge.JPG" alt="The Python Challenge">
 
 　　如果你在编程生涯中从没做过这样的挑战的话，这可能会有点棘手。但是配和上面介绍的那本书的话也不是很难。你应该试一试。它有 33 个关卡(谜题)，可以用你 Python 编程技能解决。
 
@@ -53,7 +53,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### Learn Python Programming @ Codecademy
 
-<img src="/images/resouces-for-learn-python/The Learn-Python-Programming.JPG" alt="Learn Python Programming">
+<img src="/images/resouces-for-learn-python/Learn-Python-Programming.JPG" alt="Learn Python Programming">
 
 　　你将会看到许多”精英”程序员骂这个网站，但那并不重要。我们想要做的是看/测试 一门编程语言的基本语法是怎么工作的，以及当和函数组合时可以做什么。而不是 打印一个 ‘Hello World’ .
 
@@ -63,7 +63,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### Intro to Computer Science @ Udacity
 
-<img src="/images/resouces-for-learn-python/The Intro-to-Computer-Science.JPG" alt="Intro to Computer Science">
+<img src="/images/resouces-for-learn-python/Intro-to-Computer-Science.JPG" alt="Intro to Computer Science">
 
 　　Udacity 提供了一个很棒的免费课程，带你引入 Python 编程学习，学习搜索引擎的 更多东西，以及如何构建你自己的小型网络爬虫。它的确是一个值得参与的有趣的课程，并且还提供了额外的引导和社区支持.
 
@@ -75,7 +75,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### Google’s Python Class
 
-<img src="/images/resouces-for-learn-python/The Google’s-Python-Class.JPG" alt="Google’s Python Class">
+<img src="/images/resouces-for-learn-python/Google’s-Python-Class.JPG" alt="Google’s Python Class">
 
 　　Google 它本身就被一大堆 Python 代码驱动着，只有他们支持社区并且愿意 帮助其他人学习语言才有意义。这是我曾看过的最喜欢的指南/课程之一。它真的 很详细，而且适合初学者，观看起来也很有趣.
 
@@ -85,13 +85,13 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### 简明 Python 教程
 
-<img src="/images/resouces-for-learn-python/The 简明Python教程.JPG" alt="简明 Python 教程">
+<img src="/images/resouces-for-learn-python/简明Python教程.JPG" alt="简明 Python 教程">
 
 　　非常像 LPTHW，但是在如何制定你的完美学习计划并实施，以及如何开始第一步上 提供了更深的引导，而不会让你丧失自信心。对于那些想学 Python 的人来说它被认为是 最好的初学者教程之一，当然你要先看看前几章，看看自己是否喜欢它的写作风格.
 
 ### Think Python
 
-<img src="/images/resouces-for-learn-python/The Think-Python.JPG" alt="Think Python">
+<img src="/images/resouces-for-learn-python/Think-Python.JPG" alt="Think Python">
 
 　　Think Python 是一个面向 Python 初学者的一个指南。它从编程的基本概念教起，而且它很 仔细地定义了所有的术语当他们第一次用到时，并且很有逻辑性地展现新的概念。像递归和面向 对象这样大一点的知识块被分成了一系列更小的步骤，穿插于课程几个章节.
 
@@ -99,7 +99,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### Python at Learnstreet
 
-<img src="/images/resouces-for-learn-python/The Python-at-Learnstreet.JPG" alt="Python at Learnstreet">
+<img src="/images/resouces-for-learn-python/Python-at-Learnstreet.JPG" alt="Python at Learnstreet">
 
 　　你可能会想一个提供编程教程的网站应该知道如何在他们的页面上添加一个 HTML 标，哈哈哈。严肃一点地说，Learnstreet 提供了最棒的 Python 交互式学习教程，就像这篇文章所说的所有 东西一样，它对初学者很友好。如果你遇到了问题，最好用谷歌搜索他们.
 
@@ -107,7 +107,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### The New Boston
 
-<img src="/images/resouces-for-learn-python/The The-New-Boston.JPG" alt="The New Boston">
+<img src="/images/resouces-for-learn-python/The-New-Boston.JPG" alt="The New Boston">
 
 　　如果你更喜欢视频学习，我不确定是否还有比 The Nes Boston 的 Python 系列视频教程更 全面的了，其他的许多编程语言也可以在他们的 Youtube 频道里找到.
 
@@ -115,7 +115,7 @@ description: 学习Python编程的11个资源，收藏下来~~
 
 ### Python @ Coursera
 
-<img src="/images/resouces-for-learn-python/The Python.JPG" alt="Python">
+<img src="/images/resouces-for-learn-python/Python.JPG" alt="Python">
 
 　　这个课程是为从来没接触过编程的人准备的。你只需要十年级的数学基础就可以了: 懂简单的数学 方程和算术优先级。以及像 f(x) = x + 5 这样的函数.
 
