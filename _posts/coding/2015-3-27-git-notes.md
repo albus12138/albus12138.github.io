@@ -20,7 +20,7 @@ description: Git shell的一点记录0.0
 
 对于后一种情况，则使用
 
->    git clone &lt;code location&gt;
+>    git clone <code location>
 
  
 
@@ -140,7 +140,7 @@ GitCafe的帮助文档：如何安装和设置 Git
 
 这样就可以只用ssh协议的URL了,一般默认是https协议的，如图点击SSH即可切换：
 
-<img src="/images/git-notes/1.jpg">
+![ssh](/images/git-notes/1.jpg)
 
 这样push代码时就不用再输密码了。
 
@@ -212,5 +212,3 @@ GitCafe的帮助文档：如何安装和设置 Git
 执行git remote remove origin删除该远程路径
 
 执行git remote add origin git@aaaaaa.github.com:aaaaaa/xxxxxx.git加上正确的远程仓库。
-
-[ssh]: http://en.wikipedia.org/wiki/Secure_Shell
