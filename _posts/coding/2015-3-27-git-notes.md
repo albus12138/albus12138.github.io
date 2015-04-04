@@ -20,7 +20,7 @@ description: Git shell的一点记录0.0
 
 对于后一种情况，则使用
 
->    git clone <code location>
+>    git clone {code location>
 
  
 
@@ -45,11 +45,11 @@ unstaged表示该代码尚未开发完成，staged表示代码开发完成了，
 
 让代码从unstaged变成staged，要通过命令      
 
->    git add <files>
+>    git add {files}
 
      和
 
->    git rm <files>
+>    git rm {files}
 
 让代码从staged变成committed，自然要使用命令
 
@@ -70,11 +70,11 @@ git  真正令人为之欢呼的是它原生的分支概念。
 
 创建一个分支这样操作
 
->    git checkout -b <new branch name>
+>    git checkout -b {new branch name}
 
 合并某一个分支的修改使用这个命令
 
->    git merge <branch name>
+>    git merge {branch name}
 
 
 此处应该有掌声！还记得svn中要执行这个操作你要干什么吗？你要先查log，记下要合并的分支中修改的开始版本号和结束版本号，然后在回到trunk目录下写一个我至今都无法记清楚的命令。。。。真是痛苦的回忆！还好现在有git了！
@@ -87,15 +87,15 @@ git  真正令人为之欢呼的是它原生的分支概念。
 
 以上的所有的操作你都能够独自在自己的机器上完成，但是我们需要一些命令使我们能够和其他人交流代码。首先，你需要给远程的代码库起个别名
 
->    git remote add <alias> <remote address>
+>    git remote add {alias} {remote address}
 
 你需要拉取远程代码库的某个分支（默认是master）
 
->    git pull <alias> <branch name>
+>    git pull {alias} {branch name}
 
 你需要提交代码给远程代码库
 
->    git push <alias> <branch name>
+>    git push {alias} {branch name}
 
 git的命令就是这么简单易懂，完全不需要我解释什么。
 
