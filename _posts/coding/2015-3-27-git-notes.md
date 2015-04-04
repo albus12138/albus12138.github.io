@@ -47,7 +47,7 @@ unstaged表示该代码尚未开发完成，staged表示代码开发完成了，
 
 >    git add {files}
 
-     和
+和
 
 >    git rm {files}
 
