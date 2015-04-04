@@ -20,7 +20,7 @@ description: Git shell的一点记录0.0
 
 对于后一种情况，则使用
 
->    git clone <code location>
+>    git clone &lt;code location&gt;
 
  
 
