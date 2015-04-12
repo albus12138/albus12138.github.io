@@ -21,7 +21,7 @@ host_patterns = patterns('',
     host(r'a', 'a.urls', name='a'),
     host(r'b', 'b.urls', name='b'),
 )
-{% endhightlight %}
+{% endhighlight %}
 
 这段代码会将a.urls中的URL配置到a.example.com，b同理。
 
