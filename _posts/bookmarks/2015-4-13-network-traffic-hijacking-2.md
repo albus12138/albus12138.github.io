@@ -32,7 +32,7 @@ description: 科普~~~
 
 在上一篇中 也提到，如果在户外没有 3G 信号的地方钓鱼，无法将获得的流量转发到外网。然而，使用网页这一切就迎刃而解。我们完全可以在自己的设备上搭建一个本机的假冒站点，留住用户来发起离线攻击。对于那些连上 WiFi 能自动弹网页的设备，那就更容易入侵了。因此，劫持网页流量成了各路黑客们的钟爱，一种可在任意网页发起 XSS 的注入入侵方式。
 
-<img src="/images/network-traffic-hijacking-2/http-inject.jpg" alt="http-inject">
+<img src="/images/network-traffic-hijacking-2/http-inject.png" alt="http-inject">
 
 下面，开始我们的攻防之旅。
 
@@ -44,7 +44,7 @@ description: 科普~~~
 
 和传统 XSS 攻击不同，流量劫持可以得到任何通信数据，当然也包括那些受 HttpOnly 保护的 Cookie。攻击脚本只需对某个站点发起请求，黑客即可在中途劫持到传输的 Cookie 数据。如果同时发起众多站点，就能覆盖相当一部分目标了。
 
-<img src="/images/network-traffic-hijacking-2/cookie-sniffer.jpg" alt="cookie-sniffer">
+<img src="/images/network-traffic-hijacking-2/cookie-sniffer.png" alt="cookie-sniffer">
 
 这种请求未必要真正访问一次页面，仅仅将 URL 作为图片加载，将目标站点的 Cookie 送出即可。黑客得到 Cookie，即可在自己浏览器里还原出登录状态。尽管你确实没有登录操作，但那些已登录的却能出卖你。
 
@@ -58,13 +58,13 @@ description: 科普~~~
 
 要是在流量可控的网络里，剥离页面所有内容只剩表单，又会如何？
 
-<img src="/images/network-traffic-hijacking-2/match-pwd.jpg" alt="match-pwd">
+<img src="/images/network-traffic-hijacking-2/match-pwd.png" alt="match-pwd">
 
 保存着的密码仍能自动填上，并且可被脚本访问到！如果我们在用户访问的页面里，创建大量的隐藏框架页，即可尝试获取各种网站保存着的账号了。（如今 Chrome 框架页已经不会自动填写了。具体实现和浏览器有关）。
 
 然而，即使框架页不自动填写，但主页面总得保留该功能吧。如果发现用户某个打开着的网页很久没有交互了，可悄悄跳转到如上那样的纯表单页，无论能否获取数据，都将继续跳转，一个接一个的尝试。。。直到用户切回窗口，再恢复到原先那个页面。
 
-<img src="/images/network-traffic-hijacking-2/save-sniffer.jpg" alt="save-sniffer">
+<img src="/images/network-traffic-hijacking-2/save-sniffer.png" alt="save-sniffer">
 
 由于泄露的是明文的账号和密码，即使数量不多，也能通过社会工程学来获取到用户的更多信息，最终导致更严重的泄露。
 
@@ -84,15 +84,15 @@ description: 科普~~~
 
 为了将缓存的有效期发挥到极致，我们事先在各大网站上，找出一些过期时间长、很久没有修改的资源，评估其未来变化不大的可能。
 
-<img src="/images/network-traffic-hijacking-2/find-stable-res.jpg" alt="find-stable-res">
+<img src="/images/network-traffic-hijacking-2/find-stable-res.png" alt="find-stable-res">
 
 当用户打开任意一个 HTTP 网页时，注入的 XSS 代码开始预加载这些资源。由于一切流量都在控制之中，我们可以完全不走代理，而是返回自己的攻击脚本。
 
-<img src="/images/network-traffic-hijacking-2/cache-poisoning.jpg" alt="cache-poisoning">
+<img src="/images/network-traffic-hijacking-2/cache-poisoning.png" alt="cache-poisoning">
 
 用户浏览器收到回复后，就将其一一缓存起来了。我们可以事先收集大量的资源地址，让用户在线的时间里，尽可能多的缓存受到感染。未来，用户再次访问引用了这些资源的网站时，入侵脚本将穿越时空，从沉睡中唤醒。
 
-<img src="/images/network-traffic-hijacking-2/cache-actived.jpg" alt="cache-actived">
+<img src="/images/network-traffic-hijacking-2/cache-actived.png" alt="cache-actived">
 
 只要用户不清空缓存，这些被感染的脚本始终附着在浏览器缓存里，直到用户强制刷新页面时或许才能解脱。更多细节可参考这里 (不得不说，这太可怕了)。
 
@@ -104,7 +104,7 @@ description: 科普~~~
 
 由于通过隐藏 iframe 框架访问了这个页面，用户并不知情，但尽职的浏览器却将其缓存起来。未来，用户打开被感染的网页时，浏览器直接从离线储存里取出，其中布置的脚本因此触发。由于是个空白页面，因此需要填充上真实的网站内容。最简单的方法，就是嵌套一个原页面的框架，并在 URL 里加上随机数，确保是最新的在线内容。
 
-<img src="/images/network-traffic-hijacking-2/offline-actived.jpg" alt="offline-actived">
+<img src="/images/network-traffic-hijacking-2/offline-actived.png" alt="offline-actived">
 
 因为嵌套的是同域名的框架，最终仍能被入侵脚本所控制。不过，离线存储投毒的后期影响会小一些。未来用户在安全的网络里打开页面时，虽然能立即显示之前缓存的页面，但同时也会尝试访问 .appcache 文件。由于这个文件大多都不存在，因此浏览器很可能删除掉离线数据，导致之后的访问不再使用离线储存。因此理论上说只有一次的触发机会，但它没有过期时间，适用于任意 HTTP 页面投毒。
 
@@ -120,7 +120,7 @@ description: 科普~~~
 
 不同于简单的 HTTP 代理，HTTPS 服务需要一个权威机构认定的证书才算有效。自己随便签发的证书，显然是没有说服力的，HTTPS 客户端因此会质疑。在过去，这并不怎么影响使用过程，无非弹出一个无效的证书之类的提示框。大多用户并不明白是什么情况，就点了继续，导致允许了黑客的伪证书，HTTPS 流量因此遭到劫持。
 
-<img src="/images/network-traffic-hijacking-2/ssl-proxy.jpg" alt="ssl-proxy">
+<img src="/images/network-traffic-hijacking-2/ssl-proxy.png" alt="ssl-proxy">
 
 在经历越来越多的入侵事件之后，人们逐渐意识到，不能再轻易的让用户接受不信任的证书了。如今，主流浏览器对此都会给予严重的警告提示，避免用户进入伪安全站点。
 
@@ -132,13 +132,13 @@ description: 科普~~~
 
 事实上，在 PC 端上网很少有直接进入 HTTPS 网站的。例如支付宝网站，大多是从淘宝跳转过来，而淘宝使用的仍是不安全的 HTTP 协议。如果在淘宝网的页面里注入 XSS，屏蔽对 HTTPS 的页面访问，强制用 HTTP 取而代之，那么用户也就永远无法进入安全站点了。
 
-<img src="/images/network-traffic-hijacking-2/from-http.jpg" alt="from-http">
+<img src="/images/network-traffic-hijacking-2/from-http.png" alt="from-http">
 
 尽管地址栏里没有出现 HTTPS 的字样，但域名看起来也是正确的，大多用户都会认为不是钓鱼网站，因此也就忽视了。因此，只要入口页是不安全的，那么之后的页面再安全也无济于事。
 
 当然也有一些用户通过输网址访问的，他们输入了 www.alipaly.com 就敲回车进入了。然而，浏览器并不知道这是一个 HTTPS 的站点，于是使用默认的 HTTP 去访问。不过这个 HTTP 版的支付宝的确也存在，其唯一功能就是重定向到自己 HTTPS 站点上。劫持流量的中间人一旦发现有重定向到 HTTPS 站点的，显然不愿意让用户走这条不受自己控制的路。于是拦下重定向的命令，自己去获取重定向后的站点内容，然后再回复给用户。于是，用户始终都是在 HTTP 站点上访问，自然就可以无限劫持了。
 
-<img src="/images/network-traffic-hijacking-2/direct-http.jpg" alt="direct-http">
+<img src="/images/network-traffic-hijacking-2/direct-http.png" alt="direct-http">
 
 ###  搜索引擎劫持
 
@@ -156,7 +156,7 @@ description: 科普~~~
 
 有时为了能让网页获得更多的在线能力，安装插件必不可少，例如支付控件、在线播放器等等。在方便使用的同时，也埋下了安全隐患。如果是一些小网站强迫用户安装插件的，大家几乎都是置之不理。但若一些正规的大网站，提示用户缺少某些插件，并且配上一些专业的提示，相信大多都会选择安装。而这一切，通过被注入的攻击脚本完全能办到。
 
-<img src="/images/network-traffic-hijacking-2/plugin-phishing.jpg" alt="plugin-phishing">
+<img src="/images/network-traffic-hijacking-2/plugin-phishing.png" alt="plugin-phishing">
 
 不过，正规的插件都是有完整的数字签名的，而伪造的很难躲过浏览器的验证，会出现各种安全提示。因此，攻击者往往使用直接下载的方式，提示用户保存并打开安装包。
 
@@ -164,7 +164,7 @@ description: 科普~~~
 
 现在越来越多的应用程序，选择使用内嵌网页来简化界面的开发，在移动设备上更是普遍。通常为了能让页面和客户端交互，赋予一些本地程序的接口供调用，因此具有了较高的权限。不过，正常情况下嵌入的都是受白名单限制的可信页面，因此不存在安全隐患。然而在被劫持的网络里，一切明文传输的数据都不再具备可信度。同样的脚本注入，就能获得额外的权限了。
 
-<img src="/images/network-traffic-hijacking-2/hybrid-app.jpg" alt="hybrid-app">
+<img src="/images/network-traffic-hijacking-2/hybrid-app.png" alt="hybrid-app">
 
 一些带有缺陷的系统，攻击脚本甚至能获得出乎意料的能力。通过之前提到的网页缓存投毒，这颗埋下的地雷随时都有可能触发。
 
