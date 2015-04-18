@@ -140,7 +140,7 @@ GitCafe的帮助文档：如何安装和设置 Git
 
 这样就可以只用ssh协议的URL了,一般默认是https协议的，如图点击SSH即可切换：
 
-![ssh](/images/git-notes/1.jpg)
+<img src="/images/git-notes/1.jpg">
 
 这样push代码时就不用再输密码了。
 
