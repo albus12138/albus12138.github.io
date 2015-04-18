@@ -144,6 +144,82 @@ GitCafe的帮助文档：如何安装和设置 Git
 
 这样push代码时就不用再输密码了。
 
+###  多账号ssh配置
+
+当你在Github或Gitcafe或Coding都有账号时
+
+假设已经有一个Gitcafe的密钥了，需要需要添加Github的
+
+1.生成指定名字的密钥
+
+>      ssh-keygen -t rsa -C "YOUR_EMAIL@YOUREMAIL.COM" -f ~/.ssh/github
+
+命名为github（这里叫什么随意，不要重名即可），然后会生成github和github.pub这两个文件
+
+2.打开公钥文件（id_rsa.pub），并把内容复制至代码托管平台上
+
+3.修改config文件
+
+>      vim ~/.ssh/config
+
+4.添加如下代码
+
+>      Host github.com www.github.com
+
+>      IdentityFile ~/.ssh/github
+
+5.测试
+
+>      ssh -T git@github.com
+
+如果是coding的
+
+>      Host coding.net www.coding.net
+
+>      IdentityFile ~/.ssh/coding
+
+### 同一平台下的多账号配置
+
+如果有两个Github账号：
+
+1.也是按照 多账号设置 的方法进行第一第二步
+这样你就已经正确的生成好了两个密钥，假设是：github_a和github_b分别对应的是你的账户aaaaaa和账户bbbbbb
+
+2.修改config文件
+
+>      vim ~/.ssh/config
+
+添加如下代码
+
+{% highlight shell %}
+Host aaaaaa.github.com
+HostName github.com
+User git
+IdentityFile ~/.ssh/github_a
+Host bbbbbb.github.com
+HostName github.com
+User git
+IdentityFile ~/.ssh/github_b
+{% endhighlight %}
+
+3.修改ssh URL
+例如原来的url是：git@github.com:aaaaaa/xxxxxx.git
+
+需要改成：git@aaaaaa.github.com:aaaaaa/xxxxxx.git
+
+bbbbbb账号的修改也是如此
+
+
+最后补充一点（这部分Git熟悉的基本可以略过）：有些童鞋可能在设置这个多账号前已经配置了一个Github的ssh，然后把代码clone下来，配置多账号后，原来的代码就提交不上了。
+
+此时你进入 原来clone的代码文件夹下，执行 git remote -v，即可看到远处资源库路径
+
+如：git@github.com:aaaaaa/xxxxxx.git
+
+执行git remote remove origin删除该远程路径
+
+执行git remote add origin git@aaaaaa.github.com:aaaaaa/xxxxxx.git加上正确的远程仓库。
+
 
 
 [ssh]: http://en.wikipedia.org/wiki/SSH
