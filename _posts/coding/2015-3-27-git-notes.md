@@ -110,6 +110,40 @@ git的命令就是这么简单易懂，完全不需要我解释什么。
 
 个人觉得最直接的好处就是Git每次提交时不用输密码
 
+###  基本的ssh配置
+
+GitCafe的帮助文档：如何安装和设置 Git
+
+简要总结一下
+
+1.打开ssh目录，一般是隐藏的 cd ~/.ssh
+
+2.生成密钥文件,这样就会生成默认名字为id_rsa和id_rsa.pub
+
+>      ssh-keygen -t rsa -C "YOUR_EMAIL@YOUREMAIL.COM"
+
+(说明：YOUR_EMAIL@YOUREMAIL.COM换成你自己的邮箱)
+
+3.打开公钥文件（id_rsa.pub），并把内容复制至代码托管平台上
+
+>      vim ~/.ssh/id_rsa.pub
+
+进入 GitCafe -->账户设置-->SSH 公钥管理设置项，点击添加新公钥 按钮，在 Title 文本框中输入任意字符，在 Key 文本框粘贴刚才复制的公钥字符串，按保存按钮完成操作。
+
+4.测试
+
+>      ssh -T git@gitcafe.com
+
+成功应该提示
+
+>      Hi xxxxxx! You"ve successfully authenticated, but GitCafe does not provide shell access.
+
+这样就可以只用ssh协议的URL了,一般默认是https协议的，如图点击SSH即可切换：
+
+<img src="/images/git-notes/1.jpg">
+
+这样push代码时就不用再输密码了。
+
 
 
 [ssh]: http://en.wikipedia.org/wiki/SSH
