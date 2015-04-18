@@ -191,7 +191,16 @@ GitCafe的帮助文档：如何安装和设置 Git
 
 添加如下代码
 
-
+{% highlight Vim Script %}
+Host aaaaaa.github.com
+HostName github.com
+User git
+IdentityFile ~/.ssh/github_a
+Host bbbbbb.github.com
+HostName github.com
+User git
+IdentityFile ~/.ssh/github_b
+{% endhighlight %}
 
 3.修改ssh URL
 例如原来的url是：git@github.com:aaaaaa/xxxxxx.git
