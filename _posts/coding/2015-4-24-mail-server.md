@@ -25,7 +25,7 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 
 {% highlight Bash shell scripts %}
 yum install mysql-server
-{% enghighlight %}
+{% endhighlight %}
 
 ###  关闭防火墙
 
@@ -33,7 +33,7 @@ yum install mysql-server
 service iptables stop #关闭防火墙
 
 chkconfig iptable off #关闭开机自启动
-{% enghighlight %}
+{% endhighlight %}
 
 ###  关闭SELinux
 
@@ -43,7 +43,7 @@ chkconfig iptable off #关闭开机自启动
 
 {% highlight Bash shell scripts %}
 yum -y remove sendmail
-{% enghighlight %}
+{% endhighlight %}
 
 ###  添加EMOS1.6的YUM源
 
@@ -71,7 +71,7 @@ vi /etc/yum.repos.d/EMOS.repo
     protect=0
 
 yum clean all #清除yum记录
-{% enghighlight %}
+{% endhighlight %}
 
 现在我们就建好本地的EMOS源了~准备工作到此结束~
 
@@ -106,7 +106,7 @@ vi /etc/postfix/main.cf
     # Queue lifetime control
     bounce_queue_lifetime = 1d
     maximal_queue_lifetime = 1d
-{% enghighlight %}
+{% endhighlight %}
 
 ###  配置 courier-authlib
 
@@ -152,7 +152,7 @@ service courier-authlib start
 
 # 修改authdaemon socket 目录权限
 chmod 755 /var/spool/authdaemon/
-{% enghighlight %}
+{% endhighlight %}
 
 ###  配置 maildrop
 
@@ -172,7 +172,7 @@ vi /etc/postfix/main.cf
 
 # 测试maildrop对authlib的支持
 maildrop -v
-{% enghighlight %}
+{% endhighlight %}
 
 # TO BE COUNTINE
 
