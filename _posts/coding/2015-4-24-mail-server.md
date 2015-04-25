@@ -24,10 +24,10 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 
 虽然不加DNS解析也能把邮件发出去，但会被大多数邮件服务器当作垃圾邮件。根据我们的实际经验，需要添加三条DNS解析记录：A记录、MX记录、TXT记录。比如域名example.com，对应的DNS记录如下： 
 
-主机记录|记录类型|      记录值      |MX优先级
-  mail  |   A    |    xx.xx.xx.xx   |   --   
-   @    |   MX   | mail.example.com |   10   
-   @    |   TXT  |  v=spf1 mx -all  |   --   
+>主机记录|记录类型|      记录值      |MX优先级
+>  mail  |   A    |    xx.xx.xx.xx   |   --   
+>   @    |   MX   | mail.example.com |   10   
+>   @    |   TXT  |  v=spf1 mx -all  |   --   
 
 ###  Mysql-Server安装
 
@@ -258,11 +258,11 @@ echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
 
 注：
 
-  Extmail url: http://mail.example.com/extmail
-  Extman url: http://mail.example.com/extman
-  Extman 管理员用户名：root@mail.example.com
-  管理员默认密码： extmail*123*
-  Extmail 登录时，域名项应改为 mail.example.com
+    Extmail url: http://mail.example.com/extmail
+    Extman url: http://mail.example.com/extman
+    Extman 管理员用户名：root@mail.example.com
+    管理员默认密码： extmail*123*
+    Extmail 登录时，域名项应改为 mail.example.com
 
 ###  配置cyrus-sasl
 
