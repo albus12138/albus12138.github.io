@@ -24,10 +24,32 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 
 虽然不加DNS解析也能把邮件发出去，但会被大多数邮件服务器当作垃圾邮件。根据我们的实际经验，需要添加三条DNS解析记录：A记录、MX记录、TXT记录。比如域名example.com，对应的DNS记录如下： 
 
-<p>主机记录|记录类型|      记录值      |MX优先级</p>
-<p>  mail  |   A    |    xx.xx.xx.xx   |   --   </p>
-<p>   @    |   MX   | mail.example.com |   10   </p>
-<p>   @    |   TXT  |  v=spf1 mx -all  |   --   </p>
+<table>
+    <tr>
+        <th>主机记录</th>
+        <th>记录类型</th>
+        <th>记录值</th>
+        <th>MX优先级</th>
+    </tr>
+    <tr>
+        <th>mail</th>
+        <th>A</th>
+        <th>xx.xx.xx.xx</th>
+        <th>--</th>
+    </tr>
+    <tr>
+        <th>@</th>
+        <th>MX</th>
+        <th>mail.example.com</th>
+        <th>10</th>
+    </tr>
+    <tr>
+        <th>@</th>
+        <th>TXT</th>
+        <th>v=spf1 mx -all</th>
+        <th>--</th>
+    </tr>
+</table>
 
 ###  Mysql-Server安装
 
@@ -257,12 +279,11 @@ echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
 {% endhighlight %}
 
 注：
-
-    Extmail url: http://mail.example.com/extmail
-    Extman url: http://mail.example.com/extman
-    Extman 管理员用户名：root@mail.example.com
-    管理员默认密码： extmail*123*
-    Extmail 登录时，域名项应改为 mail.example.com
+1.Extmail url: http://mail.example.com/extmail
+2.Extman url: http://mail.example.com/extman
+3.Extman 管理员用户名：root@mail.example.com
+4.管理员默认密码： extmail*123*
+5.Extmail 登录时，域名项应改为 mail.example.com
 
 ###  配置cyrus-sasl
 
