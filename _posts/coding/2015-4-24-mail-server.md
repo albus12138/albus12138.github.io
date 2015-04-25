@@ -8,14 +8,15 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 搜索了网上很多教程，经过多次失败，终于整理出 CentOS 6.x 64 bit 系统的 postfix + extmail+mysql 邮件系统搭建文档。
 
 安装环境：
-* 操作系统---CentOS 6.5 64bit
-* 邮件传输代理(MTA)---Postfix 2.6.2
-* WebMail 系统---Extmail 1.1.0
-* Web 账户管理后台---Extman 1.0.0
-* 邮件投递代理(MDA)---maildrop 2.0.4
-* 其它数据认证库---courier-authlib 0.62.2
-* SMTP 认证库---cyrus-sasl 2.1.22
-* POP3 认证库---courier-imap 4.5.0
+
+*  操作系统---CentOS 6.5 64bit
+*  邮件传输代理(MTA)---Postfix 2.6.2
+*  WebMail 系统---Extmail 1.1.0
+*  Web 账户管理后台---Extman 1.0.0
+*  邮件投递代理(MDA)---maildrop 2.0.4
+*  其它数据认证库---courier-authlib 0.62.2
+*  SMTP 认证库---cyrus-sasl 2.1.22
+*  POP3 认证库---courier-imap 4.5.0
 
 ##  安装准备
 
