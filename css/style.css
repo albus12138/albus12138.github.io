@@ -31,11 +31,11 @@ img{max-width:100%;}
 /*-----light-font----*/
 @font-face {
     font-family: 'open_sanslight';
-    src: url('./fonts/opensans_light_macroman/OpenSans-Light-webfont.eot');
-    src: url('./fonts/opensans_light_macroman/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
-         url('./fonts/opensans_light_macroman/OpenSans-Light-webfont.woff') format('woff'),
-         url('./fonts/opensans_light_macroman/OpenSans-Light-webfont.ttf') format('truetype'),
-         url('./fonts/opensans_light_macroman/OpenSans-Light-webfont.svg#open_sanslight') format('svg');
+    src: url('/fonts/opensans_light_macroman/OpenSans-Light-webfont.eot');
+    src: url('/fonts/opensans_light_macroman/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/opensans_light_macroman/OpenSans-Light-webfont.woff') format('woff'),
+         url('/fonts/opensans_light_macroman/OpenSans-Light-webfont.ttf') format('truetype'),
+         url('/fonts/opensans_light_macroman/OpenSans-Light-webfont.svg#open_sanslight') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -43,16 +43,16 @@ img{max-width:100%;}
 /*-----regular-font----*/
 @font-face {
     font-family: 'open_sansregular';
-    src: url('./fonts/opensans_regular_macroman/OpenSans-Regular-webfont.eot');
-    src: url('./fonts/opensans_regular_macroman/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('./fonts/opensans_regular_macroman/OpenSans-Regular-webfont.woff') format('woff'),
-         url('./fonts/opensans_regular_macroman/OpenSans-Regular-webfont.ttf') format('truetype'),
-         url('./fonts/opensans_regular_macroman/OpenSans-Regular-webfont.svg#open_sansregular') format('svg');
+    src: url('/fonts/opensans_regular_macroman/OpenSans-Regular-webfont.eot');
+    src: url('/fonts/opensans_regular_macroman/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/opensans_regular_macroman/OpenSans-Regular-webfont.woff') format('woff'),
+         url('/fonts/opensans_regular_macroman/OpenSans-Regular-webfont.ttf') format('truetype'),
+         url('/fonts/opensans_regular_macroman/OpenSans-Regular-webfont.svg#open_sansregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 body {
-	background:url('images/bg.jpg') no-repeat 100%;
+	background:url('/images/bg.jpg') no-repeat 100%;
 	background-size: 100%;
 	font-family: 'open_sanslight';
 	font-size: 100%;
@@ -91,7 +91,7 @@ body {
 /**-----start-search-bar-section------**/
 .buttom
 {
-	background:url('images/bg2.png') no-repeat 100% 0%;
+	background:url('/images/bg2.png') no-repeat 100% 0%;
 	background-size: 100%;
 	text-align: center;
 	vertical-align: middle;
@@ -152,7 +152,7 @@ body {
 .search_box form input[type="submit"] {
 	border: none;
 	cursor: pointer;
-	background: url('images/search.png') no-repeat 0px 1px;
+	background: url('/images/search.png') no-repeat 0px 1px;
 	position: absolute;
 	right: 0;
 	width: 34px;
