@@ -22,6 +22,13 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 
 ### DNS配置
 
+虽然不加DNS解析也能把邮件发出去，但会被大多数邮件服务器当作垃圾邮件。根据我们的实际经验，需要添加三条DNS解析记录：A记录、MX记录、TXT记录。比如域名example.com，对应的DNS记录如下： 
+
+主机记录|记录类型|      记录值      |MX优先级
+  mail  |   A    |    xx.xx.xx.xx   |   --   
+   @    |   MX   | mail.example.com |   10   
+   @    |   TXT  |  v=spf1 mx -all  |   --   
+
 ###  Mysql-Server安装
 
 {% highlight Bash shell scripts %}
@@ -249,5 +256,80 @@ echo "/usr/local/mailgraph_ext/mailgraph-init start" >> /etc/rc.d/rc.local
 echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
 {% endhighlight %}
 
+注：
+  Extmail url: http://mail.example.com/extmail
+  Extman url: http://mail.example.com/extman
+  Extman 管理员用户名：root@mail.example.com
+  管理员默认密码： extmail*123*
+  Extmail 登录时，域名项应改为 mail.example.com
+
+##  配置cyrus-sasl
+
+{% highlight Bash shell scripts %}
+# 删除系统自带的cyrus-sasl
+rpm -e --nodeps cyrus-sasl
+
+# 如果以上卸载有问题，请用以下卸载方式：
+rpm -qa | grep cyrus-sasl | xargs rpm -e --allmatches --nodeps
+
+yum install cyrus-sasl*
+
+vi /etc/postfix/main.cf
+
+    # smtpd related config
+    smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_hostname, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unauth_destination, reject_unauth_pipelining, reject_invalid_hostname,
+    # SMTP sender login matching config
+    smtpd_sender_restrictions = permit_mynetworks, reject_sender_login_mismatch, reject_authenticated_sender_login_mismatch, reject_unauthenticated_sender_login_mismatch
+    smtpd_sender_login_maps = mysql:/etc/postfix/mysql_virtual_sender_maps.cf, mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+    # SMTP AUTH config here
+    broken_sasl_auth_clients = yes
+    smtpd_sasl_auth_enable = yes
+    smtpd_sasl_local_domain = $myhostname
+    smtpd_sasl_security_options = noanonymous
+
+cp /usr/lib64/sasl2/smtpd.conf /usr/lib64/sasl2/smtpd.conf.bak
+
+vi /usr/lib64/sasl2/smtpd.conf
+
+    pwcheck_method: authdaemond
+    log_level: 3
+    mech_list: PLAIN LOGIN
+    authdaemond_path:/var/spool/authdaemon/socket
+
+service postfix restart
+# 通过以下命令获得postmaster@extmail.org的用户名及密码的BASE64编码：
+perl -e 'use MIME::Base64; print encode_base64("postmaster\@mail.example.com")'
+
+perl -e 'use MIME::Base64; print encode_base64("extmail")'
+
+# 开始测试
+telnet localhost 25
+    Trying 127.0.0.1...
+    Connected to localhost.localdomain (127.0.0.1).
+    Escape character is '^]'.
+    220 mail.example.com ESMTP Postfix - by extmail.org
+    ehlo mail.example.com <<输入内容(域名)
+    250-mail.example.com
+    250-PIPELINING
+    250-SIZE 5242880
+    250-VRFY
+    250-ETRN
+    250-AUTH LOGIN PLAIN
+    250-AUTH=LOGIN PLAIN
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250 DSN
+    auth login <<输入内容
+    334 VXNlcm5hbWU6
+    cG9zdG1hc3RlckByb29raWUuY29t <<输入内容(用户名)
+    334 UGFzc3dvcmQ6
+    ZXh0bWFpbA== <<输入内容(密码)
+    235 2.7.0 Authentication successful ##显示这个说明认证成功
+    Quit <<输入内容
+    221 2.0.0 Bye
+    Connection closed by foreign host.
+{% endhighlight %}
+
+TO BE CONTINUE...
 
 [下载]: http://mirror.extmail.org/iso/emos/EMOS_1.6_x86_64.iso
