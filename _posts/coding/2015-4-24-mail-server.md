@@ -175,6 +175,79 @@ vi /etc/postfix/main.cf
 maildrop -v
 {% endhighlight %}
 
+###  配置Nginx
+
+暂无内容= =
+
+###  配置Extmail&Extman
+
+{% highlight Bash shell scripts %}
+yum install extsuite-webmail extsuite-webman
+
+cp /var/www/extsuite/extmail/webmail.cf.default /var/www/extsuite/extmail/webmail.cf
+
+vi /var/www/extsuite/extmail/webmail.cf
+
+    SYS_MYSQL_USER = extmail
+    SYS_MYSQL_PASS = extmail
+
+# 更新cgi目录权限 由于SuEXEC的需要，必须将cgi目录修改成vuser:vgroup权限
+chown -R vuser:vgroup /var/www/extsuite/extmail/cgi/
+
+chown -R vuser:vgroup /var/www/extsuite/extman/cgi/
+
+# 链接基本库到Extmail
+mkdir /tmp/extman
+
+chown -R vuser:vgroup /tmp/extman/
+{% endhighlight %}
+
+###  初始化数据库
+
+{% highlight Bash shell scripts %}
+service mysqld start
+
+chkconfig mysqld on
+
+# 导入数据且初始化（默认的mysql都没有密码的，所以以下命令都不需要认证密码）
+vi /var/www/extsuite/extman/docs/init.sql
+# 把里面所有 extmail.org 的改为 你的域名
+
+mysql < /var/www/extsuite/extman/docs/extmail.sql
+
+mysql < /var/www/extsuite/extman/docs/init.sql
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_alias_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_domains_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_mailbox_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_sender_maps.cf /etc/postfix/
+
+vi /etc/postfix/main.cf
+
+    # extmail config here
+    virtual_alias_maps = mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+    virtual_mailbox_domains = mysql:/etc/postfix/mysql_virtual_domains_maps.cf
+    virtual_mailbox_maps = mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf
+    virtual_transport = maildrop:
+
+service postfix restart
+
+# 测试authlib登录，example.com改为你的域名
+/usr/sbin/authtest -s login postmaster@example.com extmail
+
+# 配置图形化日志
+/usr/local/mailgraph_ext/mailgraph-init start
+
+# 启动cmdserver
+/var/www/extsuite/extman/daemon/cmdserver --daemon
+
+# 加入开机自启动
+echo "/usr/local/mailgraph_ext/mailgraph-init start" >> /etc/rc.d/rc.local
+echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
+{% endhighlight %}
 
 
 [下载]: http://mirror.extmail.org/iso/emos/EMOS_1.6_x86_64.iso
