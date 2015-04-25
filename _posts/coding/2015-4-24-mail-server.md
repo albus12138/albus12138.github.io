@@ -257,6 +257,7 @@ echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
 {% endhighlight %}
 
 注：
+
   Extmail url: http://mail.example.com/extmail
   Extman url: http://mail.example.com/extman
   Extman 管理员用户名：root@mail.example.com
