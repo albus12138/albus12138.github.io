@@ -13,7 +13,7 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 * WebMail 系统---Extmail 1.1.0
 * Web 账户管理后台---Extman 1.0.0
 * 邮件投递代理(MDA)---maildrop 2.0.4
-* 其它数据认证库---courier-authlib 0.62..2
+* 其它数据认证库---courier-authlib 0.62.2
 * SMTP 认证库---cyrus-sasl 2.1.22
 * POP3 认证库---courier-imap 4.5.0
 
@@ -174,6 +174,6 @@ vi /etc/postfix/main.cf
 maildrop -v
 {% endhighlight %}
 
-# TO BE COUNTINE
+
 
 [下载]: http://mirror.extmail.org/iso/emos/EMOS_1.6_x86_64.iso
