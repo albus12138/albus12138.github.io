@@ -263,7 +263,7 @@ echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
   管理员默认密码： extmail*123*
   Extmail 登录时，域名项应改为 mail.example.com
 
-##  配置cyrus-sasl
+###  配置cyrus-sasl
 
 {% highlight Bash shell scripts %}
 # 删除系统自带的cyrus-sasl
