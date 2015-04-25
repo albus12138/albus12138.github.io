@@ -52,7 +52,7 @@ img{max-width:100%;}
     font-style: normal;
 }
 body {
-	background:url(./images/bg.jpg) no-repeat 100%;
+	background:url('./images/bg.jpg') no-repeat 100%;
 	background-size: 100%;
 	font-family: 'open_sanslight';
 	font-size: 100%;
@@ -91,7 +91,7 @@ body {
 /**-----start-search-bar-section------**/
 .buttom
 {
-	background:url(./images/bg2.png) no-repeat 100% 0%;
+	background:url('./images/bg2.png') no-repeat 100% 0%;
 	background-size: 100%;
 	text-align: center;
 	vertical-align: middle;
@@ -152,7 +152,7 @@ body {
 .search_box form input[type="submit"] {
 	border: none;
 	cursor: pointer;
-	background: url(./images/search.png) no-repeat 0px 1px;
+	background: url('./images/search.png') no-repeat 0px 1px;
 	position: absolute;
 	right: 0;
 	width: 34px;
