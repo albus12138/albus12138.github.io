@@ -24,7 +24,7 @@ description: Postfix+Dovecot+MySQL+Extmail虚拟用户邮件系统
 
 虽然不加DNS解析也能把邮件发出去，但会被大多数邮件服务器当作垃圾邮件。根据我们的实际经验，需要添加三条DNS解析记录：A记录、MX记录、TXT记录。比如域名example.com，对应的DNS记录如下： 
 
-<table border="1" style="align:center;">
+<table border="1" align="center" cellpadding="10">
     <tr>
         <th>主机记录</th>
         <th>记录类型</th>
