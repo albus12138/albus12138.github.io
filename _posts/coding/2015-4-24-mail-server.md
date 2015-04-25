@@ -279,11 +279,11 @@ echo "/var/www/extsuite/extman/daemon/cmdserver -v -d" >> /etc/rc.d/rc.local
 {% endhighlight %}
 
 注：
-1. Extmail url: http://mail.example.com/extmail
-2. Extman url: http://mail.example.com/extman
-3. Extman 管理员用户名：root@mail.example.com
-4. 管理员默认密码： extmail*123*
-5. Extmail 登录时，域名项应改为 mail.example.com
+    1. Extmail url: http://mail.example.com/extmail
+    2. Extman url: http://mail.example.com/extman
+    3. Extman 管理员用户名：root@mail.example.com
+    4. 管理员默认密码： extmail*123*
+    5. Extmail 登录时，域名项应改为 mail.example.com
 
 ###  配置cyrus-sasl
 
