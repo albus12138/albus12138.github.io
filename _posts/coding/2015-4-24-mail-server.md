@@ -164,7 +164,7 @@ vi /etc/authlib/authmysqlrc
     MYSQL_NAME_FIELD        name
     MYSQL_MAILDIR_FIELD     maildir
     MYSQL_QUOTA_FIELD       quota
-    MYSQL_SELECT_CLAUSE     SELECT * FROM mailbox WHERE username = '$(local_part)@$(domain)'
+    MYSQL_SELECT_CLAUSE     SELECT username,password,"",uidnumber,gidnumber,CONCAT('/home/domains/',homedir),CONCAT('/home/domains/',maildir),quota,name  FROM mailbox WHERE username = '$(local_part)@$(domain)'
 
 # 修改 authmysqlrc 的权限和拥有者
 chown daemon.daemon /etc/authlib/authmysqlrc
@@ -206,7 +206,38 @@ maildrop -v
 
 ###  配置Nginx
 
-暂无内容= =
+Extmail官方使用的是Apache，在这里我用Nginx，Nginx默认是不启用cgi支持的，所以需要其他的方式处理cgi=_=#
+
+{% highlight Bash shell scripts %}
+# nginx/conf/extmail.conf
+server {
+        listen 80;
+        server_name mail.example.com;
+        index index.html;
+        root /var/www/extsuite/extmail/html/;
+
+        error_log /var/log/mail-error.log;
+        access_log /var/log/mail-access.log;
+
+        location /extmail/cgi/ {
+                fastcgi_pass          127.0.0.1:8888;
+                include fcgi.conf;
+        }
+        location /extmail/ {
+             alias  /var/www/extsuite/extmail/html/;
+        }
+       location /extman/cgi/ {
+                fastcgi_pass          127.0.0.1:8888;
+                include fcgi.conf;
+        }
+        location /extman/ {
+                alias /var/www/extsuite/extman/html/;
+        }
+}
+
+# 启用Dispatch-init
+/var/www/extsuite/extmail/dispatch-init start
+{% endhighlight %}
 
 ###  配置Extmail&Extman
 
