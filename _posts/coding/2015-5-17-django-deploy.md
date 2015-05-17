@@ -8,9 +8,13 @@ description: CentOS6.5部署Django
 这个Django项目前段时间用业余时间做了那么久...基本上完成了，现在终于到了部署到服务器上的时候啦~~~
 
 部署环境：
+
 * HTTP反向代理服务器---Nginx 1.015
+
 * 数据库---Mysql 5.1.73
+
 * Python WSGI UNIX的HTTP服务器---Gunicorn 19.3.0
+
 * 守护进程---Supervisor 3.1.3
 
 ## 安装过程
@@ -19,8 +23,9 @@ description: CentOS6.5部署Django
 	yum install nginx
 2.修改nginx配置文件
 Django对于静态文件处理远不如Nginx，如果部署时还用Django处理静态文件就会影响的性能和安全性了。
-	#/etc/nginx/conf.d/default.conf
 
+	#/etc/nginx/conf.d/default.conf
+	
 	server {
         listen 80;
         server_name example.com;
@@ -69,6 +74,7 @@ Django对于静态文件处理远不如Nginx，如果部署时还用Django处理
 	#创建数据库时设置字符编码为utf8, 否则Django中会出现中文乱码
 	mysql> create database db_name default charset=utf8;
 3.修改Django数据库设置
+
 	#settings.py
 	DATABASES = {
 	    'default': {
@@ -92,8 +98,9 @@ Django对于静态文件处理远不如Nginx，如果部署时还用Django处理
 1.安装
 	pip install supervisor
 2.修改配置
-	echo_supervisord_conf > /etc/supervisord.conf
 
+	echo_supervisord_conf > /etc/supervisord.conf
+	
 	#设置独立配置文件
 	#在supervisord.conf末尾添加
 	[include]
@@ -113,6 +120,7 @@ Django对于静态文件处理远不如Nginx，如果部署时还用Django处理
 	stdout_logfile=/var/log/mysite/gunicorn_supervisor.log
 	redirect_stderr=true
 3.启动Supervisor
+
 	#读入配置文件
 	supervisord -c /etc/supervisord.conf
 	#启动服务
