@@ -22,7 +22,8 @@ Django-Hosts是Django的一个app，这个app可以将不同域名请求解析�
 {% endhighlight %}
 
 这段代码会将a.urls中的URL配置到a.example.com，b同理。
-安装&配置
+
+## 安装&配置
 
 1.安装，推荐使用pip安装
 
