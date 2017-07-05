@@ -5,15 +5,15 @@ category: coding
 description: Python正则表达式re模块介绍
 ---
 
-0x00 正则表达式简介
+## 0x00 正则表达式简介
 
 正则表达式是对字符串进行操作的一种逻辑公式，是用预先定义好的一些特定的字符组合组成一个"规则"字符串，来对目标字符串进行匹配、过滤。在编程过程中有广泛应用，python有内建的re模块提供正则表达式的功能。
 
 这里直接引用[百度百科](http://baike.baidu.com/item/正则表达式#4)对正则表达式中的通用符号进行说明。
 
-0x01 re模块属性和方法
+## 0x01 re模块属性和方法
 
-flags：
+**flags：**
 
 * re.A / re.ASCII - 表示仅匹配ASCII中的可见字符，不包括Unicode中其他内容
 
@@ -29,7 +29,7 @@ flags：
 
 * re.X / re.VERBOSE - 这个模式允许你为表达式添加注释，使其更加可读，该模式忽略空格，如需表示空格需要转义
 
-methods:
+**methods:**
 
 * re.search(*pattern, string, flags=0*) - 返回匹配到的第一个对象，如果没有任何匹配，返回 `None`
 

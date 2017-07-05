@@ -2,7 +2,6 @@
 layout: default
 ---
 
-<link rel="stylesheet" href="/js/prettify/prettify.css" />
 <style type="text/css">
     body { background:#e8e8e8; }
     @media screen and (max-width: 750px){
@@ -16,7 +15,7 @@ layout: default
 <div id="content">
     <div class="entry">
         <h1 class="entry-title"><a href="{{ page.url }}" title="{{ page.title }}">{{ page.title }}</a></h1>
-        <p class="entry-date">{{ page.date|date:"%Y-%m-%d" }}</p>
+        <p class="entry-date">{{ page.date | date:"%Y-%m-%d" }}</p>
         {{ content }}
         <div id="disqus_thread"></div>
 		<script type="text/javascript">
@@ -36,22 +35,34 @@ layout: default
     <div class="sidenav">
         <h2>Blog</h2>
         <ul class="artical-list">
-        {% for post in site.categories.blog%}
+        {% assign ans = 0 %}
+        {% for post in site.categories.blog %}
+            {% if ans < 5 %}
             <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+            {% endif %}
+            {% assign ans = ans | plus: 1 %}
         {% endfor %}
         </ul>
 
         <h2>Coding</h2>
         <ul class="artical-list">
+        {% assign ans = 0 %}
         {% for post in site.categories.coding%}
+            {% if ans < 5 %}
             <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+            {% endif %}
+            {% assign ans = ans | plus: 1 %}
         {% endfor %}
         </ul>
 
         <h2>Bookmarks</h2>
         <ul class="artical-list">
+        {% assign ans = 0 %}
         {% for post in site.categories.bookmarks%}
+            {% if ans < 5 %}
             <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+            {% endif %}
+            {% assign ans = ans | plus: 1 %}
         {% endfor %}
         </ul>
     </div>

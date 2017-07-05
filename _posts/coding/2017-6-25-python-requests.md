@@ -19,7 +19,7 @@ description: 超好用的python第三方模块requests使用方法介绍
 
 使用requests库发送HTTP请求非常简单，API写的恰当好处
 
-{% highlight python %}
+{% highlight python linenos %}
 import requests
 r = requests.get("http://albus12138.github.io")
 # r = requests.get("http://albus12138.github.io", timeout=5) 设置5秒超时

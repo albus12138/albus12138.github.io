@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>Django多域名 | Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/coding/django-hosts" title="Django多域名">Django多域名</a></h1>
+        <p class="entry-date">2015-04-04</p>
+        <p>当你的project下面有多个app需要解析不同的域名，但你又想在同一个project内启动时，你需要<a href="https://pypi.python.org/pypi/django-hosts">Django-Hosts</a></p>
+
+<h2 id="overview">Overview</h2>
+
+<p>Django-Hosts是Django的一个app，这个app可以将不同域名请求解析到不同的app</p>
+
+<p>举个栗子，你有example.com，你希望a.example.com解析到a这个app，b.example.com解析到b这个app，那么就添加下面这段代码：</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="c1"># mysite/hosts.py</span>
+    <span class="kn">from</span> <span class="nn">django_hosts</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">host</span>
+    <span class="n">host_patterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a.urls&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">),</span>
+        <span class="n">host</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b.urls&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">),</span>
+    <span class="p">)</span></code></pre></figure>
+
+<p>这段代码会将a.urls中的URL配置到a.example.com，b同理。</p>
+
+<h2 id="安装配置">安装&amp;配置</h2>
+
+<p>1.安装，推荐使用pip安装</p>
+
+<blockquote>
+  <pre><code> pip install django-hosts
+</code></pre>
+</blockquote>
+
+<p>2.添加 ‘django_hosts’ 到 INSTALLED_APPS</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="c1"># mysite/settings.py</span>
+    <span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+        <span class="o">...</span>
+        <span class="s1">&#39;django_hosts&#39;</span><span class="p">,</span>
+    <span class="p">)</span></code></pre></figure>
+
+<p>3.添加 ‘django_hosts.middleware.HostsRequestMiddleware’ 和 ‘django_hosts.middleware.HostsResponseMiddleware’ 到 MIDDLEWARE_CLASSES 的开始和结尾</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;django_hosts.middleware.HostsRequestMiddleware&#39;</span><span class="p">,</span>
+        <span class="o">....</span>
+        <span class="s1">&#39;django_hosts.middleware.HostsResponseMiddleware&#39;</span><span class="p">,</span>
+    <span class="p">)</span></code></pre></figure>
+
+<p>4.在urls.py同目录下创建hosts.py</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="kn">from</span> <span class="nn">django_hosts</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">host</span>
+    <span class="n">host_patterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a.urls&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">),</span>
+        <span class="n">host</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b.urls&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">),</span>
+    <span class="p">)</span></code></pre></figure>
+
+<p>5.设置 ROOT_HOSTCONF</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="c1"># mysite/settings.py</span>
+    <span class="n">ROOT_HOSTCONF</span> <span class="o">=</span> <span class="s1">&#39;mysite.hosts&#39;</span></code></pre></figure>
+
+<p>6.设置 DEFAULT_HOST</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span>    <span class="c1"># mysite/settings.py</span>
+    <span class="n">DEFAULT_HOST</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>  <span class="c1">#这里写默认host的name</span></code></pre></figure>
+
+
+        <div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES * * */
+		    var disqus_shortname = 'albus12138';
+		    
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <div class="sidenav">
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/blog/why-blog">我为什么写博客？</a></li>
+            
+            
+        
+        </ul>
+
+        <h2>Coding</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/coding/python-re">Python正则表达式</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/xctf-carnival-wp">XCTF嘉年华体验赛 Re部分WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/gctf-wp">GCTF Re&Mobile WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/python-requests">Requests模块</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/iscc-2017-wp">ISCC2017 WriteUp</a></li>
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+        </ul>
+
+        <h2>Bookmarks</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/bookmarks/ddos">免费DDOS攻击测试工具</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking-2">网络流量攻击的危害</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking">网络流量攻击</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></li>
+            
+            
+        
+        </ul>
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

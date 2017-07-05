@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>搭建邮件服务器 | Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/coding/mail-server" title="搭建邮件服务器">搭建邮件服务器</a></h1>
+        <p class="entry-date">2015-04-24</p>
+        <p>搜索了网上很多教程，经过多次失败，终于整理出 CentOS 6.x 64 bit 系统的 postfix + extmail+mysql 邮件系统搭建文档。</p>
+
+<p>安装环境：</p>
+
+<ul>
+  <li>操作系统—CentOS 6.5 64bit</li>
+  <li>邮件传输代理(MTA)—Postfix 2.6.2</li>
+  <li>WebMail 系统—Extmail 1.1.0</li>
+  <li>Web 账户管理后台—Extman 1.0.0</li>
+  <li>邮件投递代理(MDA)—maildrop 2.0.4</li>
+  <li>其它数据认证库—courier-authlib 0.62.2</li>
+  <li>SMTP 认证库—cyrus-sasl 2.1.22</li>
+  <li>POP3 认证库—courier-imap 4.5.0</li>
+</ul>
+
+<h2 id="安装准备">安装准备</h2>
+
+<h3 id="dns配置">DNS配置</h3>
+
+<p>虽然不加DNS解析也能把邮件发出去，但会被大多数邮件服务器当作垃圾邮件。根据我们的实际经验，需要添加三条DNS解析记录：A记录、MX记录、TXT记录。比如域名example.com，对应的DNS记录如下：</p>
+
+<table border="1" align="center" cellpadding="10">
+    <tr>
+        <th>主机记录</th>
+        <th>记录类型</th>
+        <th>记录值</th>
+        <th>MX优先级</th>
+    </tr>
+    <tr>
+        <td>mail</td>
+        <td>A</td>
+        <td>xx.xx.xx.xx</td>
+        <td>--</td>
+    </tr>
+    <tr>
+        <td>@</td>
+        <td>MX</td>
+        <td>mail.example.com</td>
+        <td>10</td>
+    </tr>
+    <tr>
+        <td>@</td>
+        <td>TXT</td>
+        <td>v=spf1 mx -all</td>
+        <td>--</td>
+    </tr>
+</table>
+
+<h3 id="mysql-server安装">Mysql-Server安装</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum install mysql-server</code></pre></figure>
+
+<h3 id="关闭防火墙">关闭防火墙</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>service iptables stop <span class="c1">#关闭防火墙</span>
+
+chkconfig iptable off <span class="c1">#关闭开机自启动</span></code></pre></figure>
+
+<h3 id="关闭selinux">关闭SELinux</h3>
+
+<p>修改/etc/selinux/config文件中设置SELINUX=disabled ，然后重启服务器。</p>
+
+<h3 id="删除系统自带的sendmail">删除系统自带的Sendmail</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum -y remove sendmail</code></pre></figure>
+
+<h3 id="添加emos16的yum源">添加EMOS1.6的YUM源</h3>
+
+<p>一开始是想使用EMOS1.5的，发现有一些版本上的问题竟然不兼容(╯‵□′)╯︵┻━┻，又因为EMOS1.6没有在线源，只好自己搭本地的了TAT</p>
+
+<p>EMOS1.6源iso镜像<a href="http://mirror.extmail.org/iso/emos/EMOS_1.6_x86_64.iso">下载</a> #MD5 988f899703a17487cba66bf3c35f194e</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>mkdir /var/EMOS-repo <span class="c1">#为iso镜像建立挂载点</span>
+
+mount -o loop -t iso9660 ~/EMOS_1.6_x86_64.iso /var/EMOS-repo <span class="c1">#挂载</span>
+
+vi /etc/yum.repos.d/EMOS.repo
+
+    <span class="c1"># EMOS.repo</span>
+    <span class="c1">#</span>
+    <span class="c1"># Created by ExtMail Dev Team: http://www.extmail.org/</span>
+    <span class="c1">#</span>
+    <span class="c1"># $Id$</span>
+    <span class="o">[</span>EMOS<span class="o">]</span>
+    <span class="nv">name</span><span class="o">=</span>EMOS
+    <span class="nv">baseurl</span><span class="o">=</span>file:///var/EMOS-repo/
+    <span class="nv">gpgcheck</span><span class="o">=</span><span class="m">0</span>
+    <span class="nv">priority</span><span class="o">=</span><span class="m">0</span>
+    <span class="nv">protect</span><span class="o">=</span><span class="m">0</span>
+
+yum clean all <span class="c1">#清除yum记录</span></code></pre></figure>
+
+<p>现在我们就建好本地的EMOS源了~准备工作到此结束~</p>
+
+<h2 id="安装邮件系统">安装邮件系统</h2>
+
+<h3 id="安装mta-postfix">安装MTA-Postfix</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum install postfix
+
+postconf -n &gt; /etc/postfix/main2.cf
+
+mv /etc/postfix/main.cf /etc/postfix/main.cf.bak
+
+mv /etc/postfix/main2.cf /etc/postfix/main.cf
+
+vi /etc/postfix/main.cf
+    
+    <span class="c1"># hostname</span>
+    <span class="nv">mynetworks</span> <span class="o">=</span> <span class="m">127</span>.0.0.1
+    <span class="nv">myhostname</span> <span class="o">=</span> mail.example.com <span class="c1">#这里替换为你的域名</span>
+    <span class="nv">mydestination</span> <span class="o">=</span> <span class="nv">$mynetworks</span> <span class="nv">$myhostname</span>
+    <span class="c1"># banner</span>
+    <span class="nv">mail_name</span> <span class="o">=</span> Postfix - by extmail.org
+    <span class="nv">smtpd_banner</span> <span class="o">=</span> <span class="nv">$myhostname</span> ESMTP <span class="nv">$mail_name</span>
+    <span class="c1"># response immediately</span>
+    <span class="nv">smtpd_error_sleep_time</span> <span class="o">=</span> 0s
+    <span class="c1"># Message and return code control</span>
+    <span class="nv">message_size_limit</span> <span class="o">=</span> <span class="m">5242880</span>
+    <span class="nv">mailbox_size_limit</span> <span class="o">=</span> <span class="m">5242880</span>
+    <span class="nv">show_user_unknown_table_name</span> <span class="o">=</span> no
+    <span class="c1"># Queue lifetime control</span>
+    <span class="nv">bounce_queue_lifetime</span> <span class="o">=</span> 1d
+    <span class="nv">maximal_queue_lifetime</span> <span class="o">=</span> 1d</code></pre></figure>
+
+<h3 id="配置-courier-authlib">配置 courier-authlib</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum install courier-authlib courier-authlib-mysql
+
+<span class="c1"># 修改配置文件</span>
+rm -f /etc/authlib/authmysqlrc
+
+vi /etc/authlib/authmysqlrc
+
+    MYSQL_SERVER            localhost
+    MYSQL_USERNAME          extmail
+    MYSQL_PASSWORD          extmail
+    MYSQL_SOCKET            /var/lib/mysql/mysql.sock
+    MYSQL_PORT              <span class="m">3306</span>
+    MYSQL_OPT               <span class="m">0</span>
+    MYSQL_DATABASE          extmail
+    MYSQL_USER_TABLE        mailbox
+    MYSQL_CRYPT_PWFIELD     password
+    MYSQL_UID_FIELD         uidnumber
+    MYSQL_GID_FIELD         gidnumber
+    MYSQL_LOGIN_FIELD       username
+    MYSQL_HOME_FIELD        homedir
+    MYSQL_NAME_FIELD        name
+    MYSQL_MAILDIR_FIELD     maildir
+    MYSQL_QUOTA_FIELD       quota
+    MYSQL_SELECT_CLAUSE     SELECT username,password,<span class="s2">&quot;&quot;</span>,uidnumber,gidnumber,CONCAT<span class="o">(</span><span class="s1">&#39;/home/domains/&#39;</span>,homedir<span class="o">)</span>,CONCAT<span class="o">(</span><span class="s1">&#39;/home/domains/&#39;</span>,maildir<span class="o">)</span>,quota,name  FROM mailbox WHERE <span class="nv">username</span> <span class="o">=</span> <span class="s1">&#39;$(local_part)@$(domain)&#39;</span>
+
+<span class="c1"># 修改 authmysqlrc 的权限和拥有者</span>
+chown daemon.daemon /etc/authlib/authmysqlrc
+
+chmod <span class="m">660</span> /etc/authlib/authmysqlrc
+
+<span class="c1"># 修改 authdaemonrc 以下内容</span>
+vi /etc/authlib/authdaemonrc
+
+    <span class="nv">authmodulelist</span><span class="o">=</span><span class="s2">&quot;authmysql&quot;</span>
+    <span class="nv">authmodulelistorig</span><span class="o">=</span><span class="s2">&quot;authmysql&quot;</span>
+
+<span class="c1"># 启动</span>
+service courier-authlib start
+
+<span class="c1"># 修改authdaemon socket 目录权限</span>
+chmod <span class="m">755</span> /var/spool/authdaemon/</code></pre></figure>
+
+<h3 id="配置-maildrop">配置 maildrop</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum install maildrop
+
+<span class="c1"># 配置 master.cf 注释掉原来的maildrop的配置内容，并改为下面内容</span>
+vi /etc/postfix/master.cf
+
+    maildrop unix - n n - - pipe
+    <span class="nv">flags</span><span class="o">=</span>DRhu <span class="nv">user</span><span class="o">=</span>vuser <span class="nv">argv</span><span class="o">=</span>maildrop -w <span class="m">90</span> -d <span class="si">${</span><span class="nv">user</span><span class="si">}</span>@<span class="si">${</span><span class="nv">nexthop</span><span class="si">}</span> <span class="si">${</span><span class="nv">recipient</span><span class="si">}</span> <span class="si">${</span><span class="nv">user</span><span class="si">}</span> <span class="si">${</span><span class="nv">extension</span><span class="si">}</span> <span class="o">{</span>nexthop<span class="o">}</span>
+
+<span class="c1"># 配置 main.cf 由于maildrop不支持一次多个收件人，所以添加下面参数</span>
+vi /etc/postfix/main.cf
+
+    <span class="nv">maildrop_destination_recipient_limit</span> <span class="o">=</span> <span class="m">1</span>
+
+<span class="c1"># 测试maildrop对authlib的支持</span>
+maildrop -v</code></pre></figure>
+
+<h3 id="配置nginx">配置Nginx</h3>
+
+<p>Extmail官方使用的是Apache，在这里我用Nginx，Nginx默认是不启用cgi支持的，所以需要其他的方式处理cgi=_=#</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span><span class="c1"># nginx/conf/extmail.conf</span>
+server <span class="o">{</span>
+        listen <span class="m">80</span><span class="p">;</span>
+        server_name mail.example.com<span class="p">;</span>
+        index index.html<span class="p">;</span>
+        root /var/www/extsuite/extmail/html/<span class="p">;</span>
+
+        error_log /var/log/mail-error.log<span class="p">;</span>
+        access_log /var/log/mail-access.log<span class="p">;</span>
+
+        location /extmail/cgi/ <span class="o">{</span>
+                fastcgi_pass          <span class="m">127</span>.0.0.1:8888<span class="p">;</span>
+                include fcgi.conf<span class="p">;</span>
+        <span class="o">}</span>
+        location /extmail/ <span class="o">{</span>
+             <span class="nb">alias</span>  /var/www/extsuite/extmail/html/<span class="p">;</span>
+        <span class="o">}</span>
+       location /extman/cgi/ <span class="o">{</span>
+                fastcgi_pass          <span class="m">127</span>.0.0.1:8888<span class="p">;</span>
+                include fcgi.conf<span class="p">;</span>
+        <span class="o">}</span>
+        location /extman/ <span class="o">{</span>
+                <span class="nb">alias</span> /var/www/extsuite/extman/html/<span class="p">;</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1"># 启用Dispatch-init</span>
+/var/www/extsuite/extmail/dispatch-init start</code></pre></figure>
+
+<h3 id="配置extmailextman">配置Extmail&amp;Extman</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>yum install extsuite-webmail extsuite-webman
+
+cp /var/www/extsuite/extmail/webmail.cf.default /var/www/extsuite/extmail/webmail.cf
+
+vi /var/www/extsuite/extmail/webmail.cf
+
+    <span class="nv">SYS_MYSQL_USER</span> <span class="o">=</span> extmail
+    <span class="nv">SYS_MYSQL_PASS</span> <span class="o">=</span> extmail
+
+<span class="c1"># 更新cgi目录权限 由于SuEXEC的需要，必须将cgi目录修改成vuser:vgroup权限</span>
+chown -R vuser:vgroup /var/www/extsuite/extmail/cgi/
+
+chown -R vuser:vgroup /var/www/extsuite/extman/cgi/
+
+<span class="c1"># 链接基本库到Extmail</span>
+mkdir /tmp/extman
+
+chown -R vuser:vgroup /tmp/extman/</code></pre></figure>
+
+<h3 id="初始化数据库">初始化数据库</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>service mysqld start
+
+chkconfig mysqld on
+
+<span class="c1"># 导入数据且初始化（默认的mysql都没有密码的，所以以下命令都不需要认证密码）</span>
+vi /var/www/extsuite/extman/docs/init.sql
+<span class="c1"># 把里面所有 extmail.org 的改为 你的域名</span>
+
+mysql &lt; /var/www/extsuite/extman/docs/extmail.sql
+
+mysql &lt; /var/www/extsuite/extman/docs/init.sql
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_alias_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_domains_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_mailbox_maps.cf /etc/postfix/
+
+cp /var/www/extsuite/extman/docs/mysql_virtual_sender_maps.cf /etc/postfix/
+
+vi /etc/postfix/main.cf
+
+    <span class="c1"># extmail config here</span>
+    <span class="nv">virtual_alias_maps</span> <span class="o">=</span> mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+    <span class="nv">virtual_mailbox_domains</span> <span class="o">=</span> mysql:/etc/postfix/mysql_virtual_domains_maps.cf
+    <span class="nv">virtual_mailbox_maps</span> <span class="o">=</span> mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf
+    <span class="nv">virtual_transport</span> <span class="o">=</span> maildrop:
+
+service postfix restart
+
+<span class="c1"># 测试authlib登录，example.com改为你的域名</span>
+/usr/sbin/authtest -s login postmaster@example.com extmail
+
+<span class="c1"># 配置图形化日志</span>
+/usr/local/mailgraph_ext/mailgraph-init start
+
+<span class="c1"># 启动cmdserver</span>
+/var/www/extsuite/extman/daemon/cmdserver --daemon
+
+<span class="c1"># 加入开机自启动</span>
+<span class="nb">echo</span> <span class="s2">&quot;/usr/local/mailgraph_ext/mailgraph-init start&quot;</span> &gt;&gt; /etc/rc.d/rc.local
+<span class="nb">echo</span> <span class="s2">&quot;/var/www/extsuite/extman/daemon/cmdserver -v -d&quot;</span> &gt;&gt; /etc/rc.d/rc.local</code></pre></figure>
+
+<p>注:</p>
+
+<ul>
+  <li>Extmail url: http://mail.example.com/extmail</li>
+  <li>Extman url: http://mail.example.com/extman</li>
+  <li>Extman 管理员用户名：root@mail.example.com</li>
+  <li>管理员默认密码： extmail<em>123</em></li>
+  <li>Extmail 登录时，域名项应改为 mail.example.com</li>
+</ul>
+
+<h3 id="配置cyrus-sasl">配置cyrus-sasl</h3>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span><span class="c1"># 删除系统自带的cyrus-sasl</span>
+rpm -e --nodeps cyrus-sasl
+
+<span class="c1"># 如果以上卸载有问题，请用以下卸载方式：</span>
+rpm -qa <span class="p">|</span> grep cyrus-sasl <span class="p">|</span> xargs rpm -e --allmatches --nodeps
+
+yum install cyrus-sasl*
+
+vi /etc/postfix/main.cf
+
+    <span class="c1"># smtpd related config</span>
+    <span class="nv">smtpd_recipient_restrictions</span> <span class="o">=</span> permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_hostname, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unauth_destination, reject_unauth_pipelining, reject_invalid_hostname,
+    <span class="c1"># SMTP sender login matching config</span>
+    <span class="nv">smtpd_sender_restrictions</span> <span class="o">=</span> permit_mynetworks, reject_sender_login_mismatch, reject_authenticated_sender_login_mismatch, reject_unauthenticated_sender_login_mismatch
+    <span class="nv">smtpd_sender_login_maps</span> <span class="o">=</span> mysql:/etc/postfix/mysql_virtual_sender_maps.cf, mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+    <span class="c1"># SMTP AUTH config here</span>
+    <span class="nv">broken_sasl_auth_clients</span> <span class="o">=</span> yes
+    <span class="nv">smtpd_sasl_auth_enable</span> <span class="o">=</span> yes
+    <span class="nv">smtpd_sasl_local_domain</span> <span class="o">=</span> <span class="nv">$myhostname</span>
+    <span class="nv">smtpd_sasl_security_options</span> <span class="o">=</span> noanonymous
+
+cp /usr/lib64/sasl2/smtpd.conf /usr/lib64/sasl2/smtpd.conf.bak
+
+vi /usr/lib64/sasl2/smtpd.conf
+
+    pwcheck_method: authdaemond
+    log_level: <span class="m">3</span>
+    mech_list: PLAIN LOGIN
+    authdaemond_path:/var/spool/authdaemon/socket
+
+service postfix restart
+<span class="c1"># 通过以下命令获得postmaster@extmail.org的用户名及密码的BASE64编码：</span>
+perl -e <span class="s1">&#39;use MIME::Base64; print encode_base64(&quot;postmaster\@mail.example.com&quot;)&#39;</span>
+
+perl -e <span class="s1">&#39;use MIME::Base64; print encode_base64(&quot;extmail&quot;)&#39;</span>
+
+<span class="c1"># 开始测试</span>
+telnet localhost <span class="m">25</span>
+    Trying <span class="m">127</span>.0.0.1...
+    Connected to localhost.localdomain <span class="o">(</span><span class="m">127</span>.0.0.1<span class="o">)</span>.
+    Escape character is <span class="s1">&#39;^]&#39;</span>.
+    <span class="m">220</span> mail.example.com ESMTP Postfix - by extmail.org
+    ehlo mail.example.com &lt;&lt;输入内容<span class="o">(</span>域名<span class="o">)</span>
+    <span class="m">250</span>-mail.example.com
+    <span class="m">250</span>-PIPELINING
+    <span class="m">250</span>-SIZE <span class="m">5242880</span>
+    <span class="m">250</span>-VRFY
+    <span class="m">250</span>-ETRN
+    <span class="m">250</span>-AUTH LOGIN PLAIN
+    <span class="m">250</span>-AUTH<span class="o">=</span>LOGIN PLAIN
+    <span class="m">250</span>-ENHANCEDSTATUSCODES
+    <span class="m">250</span>-8BITMIME
+    <span class="m">250</span> DSN
+    auth login &lt;&lt;输入内容
+    <span class="m">334</span> VXNlcm5hbWU6
+    cG9zdG1hc3RlckByb29raWUuY29t &lt;&lt;输入内容<span class="o">(</span>用户名<span class="o">)</span>
+    <span class="m">334</span> UGFzc3dvcmQ6
+    <span class="nv">ZXh0bWFpbA</span><span class="o">==</span> &lt;&lt;输入内容<span class="o">(</span>密码<span class="o">)</span>
+    <span class="m">235</span> <span class="m">2</span>.7.0 Authentication successful <span class="c1">##显示这个说明认证成功</span>
+    Quit &lt;&lt;输入内容
+    <span class="m">221</span> <span class="m">2</span>.0.0 Bye
+    Connection closed by foreign host.</code></pre></figure>
+
+<p>TO BE CONTINUE…</p>
+
+
+        <div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES * * */
+		    var disqus_shortname = 'albus12138';
+		    
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <div class="sidenav">
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/blog/why-blog">我为什么写博客？</a></li>
+            
+            
+        
+        </ul>
+
+        <h2>Coding</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/coding/python-re">Python正则表达式</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/xctf-carnival-wp">XCTF嘉年华体验赛 Re部分WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/gctf-wp">GCTF Re&Mobile WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/python-requests">Requests模块</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/iscc-2017-wp">ISCC2017 WriteUp</a></li>
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+        </ul>
+
+        <h2>Bookmarks</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/bookmarks/ddos">免费DDOS攻击测试工具</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking-2">网络流量攻击的危害</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking">网络流量攻击</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></li>
+            
+            
+        
+        </ul>
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

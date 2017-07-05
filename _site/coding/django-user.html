@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>Django用户系统扩展 | Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/coding/django-user" title="Django用户系统扩展">Django用户系统扩展</a></h1>
+        <p class="entry-date">2015-03-22</p>
+        <h2 id="为什么要扩展django自带的用户系统">为什么要扩展Django自带的用户系统</h2>
+
+<p>在网站的建设中发现自带的用户系统并不能满足使用需求，比如添加一些字段或者要求用户输入动态验证码，但又想使用默认的权限系统，所以才有了扩展的想法，在实践过程中也遇到了不少困难Orz</p>
+
+<h2 id="实现方法">实现方法</h2>
+
+<h3 id="继承abstractuser">继承AbstractUser</h3>
+
+<p>原有的User模型继承了AbstractUser，所以你的自定义用户表同样要继承AbstractUser，并在settings.py中添加</p>
+
+<blockquote>
+  <p>AUTH_USER_MODEL = ‘accounts.CustomUser’</p>
+</blockquote>
+
+<p>accounts是我app的名称，你可以改为你的app名称。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="c1"># /mysite/accounts/models.py</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">AbstractUser</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">CustomUser</span><span class="p">(</span><span class="n">AbstractUser</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+   <span class="n">nickname</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+   <span class="n">join_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span> <span class="c1"># 账户注册时间</span>
+   <span class="n">last_login_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span> <span class="c1"># 上次登录时间</span>
+   <span class="n">use_token</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1"># 是否使用验证码</span>
+   <span class="n">token</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># 验证码生成token</span>
+   <span class="n">locked</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1"># 账户锁定</span>
+   <span class="n">expire</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span> <span class="c1"># 账户有效期</span>
+
+   <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+       <span class="n">permissions</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;can_view_customuser&quot;</span><span class="p">,</span> <span class="s2">&quot;读取用户表&quot;</span><span class="p">),)</span></code></pre></figure>
+
+<h3 id="加密password">加密password</h3>
+
+<p>做完这些，你会发现通过admin添加的用户无法登陆，这是因为Django在数据库中对密码进行了加密存储，不必担心，Django提供了make_password这个方法，你可以通过重写CustomUser.save_model来覆盖掉原有的行为</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="c1"># /mysite/accounts/admin.py</span>
+<span class="k">class</span> <span class="nc">CustomUserAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;pbkdf2_sha256$12000$&#39;</span> <span class="o">!=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">][:</span><span class="mi">20</span><span class="p">]:</span> <span class="c1">#判断是否已经被加密，这里我只是检验了加密的标识，如果有更好的处理方法欢迎给我发送email:albus.zly@gmail.com</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">make_password</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></code></pre></figure>
+
+<h3 id="修改login页面显示">修改login页面显示</h3>
+
+<p>这时候，你已经可以使用你通过admin添加的用户登录到后台了~但是，我们还没有实现动态验证的功能，首先要修改登录页”admin/login.html”的模版来添加一个输入框，下面这段代码添加到login.html中password的后面。</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span></span><span class="c">&lt;!-- /django/contrib/admin/templates/admin/login.html --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;form-row&quot;</span><span class="p">&gt;</span>
+    
+    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;id_token&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;required&quot;</span><span class="p">&gt;</span>:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> 
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span></code></pre></figure>
+
+<p>现在还不能看到添加的输入框，因为form中并没有定义token字段，你还要扩展一下登录表单，只需要继承AuthenticationForm就可以了。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="c1"># /mysite/accounts/forms.py</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">AuthenticationForm</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span>
+
+<span class="k">class</span> <span class="nc">CustomAuthenticationForm</span><span class="p">(</span><span class="n">AuthenticationForm</span><span class="p">,</span> <span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;验证码&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">)</span>
+
+    <span class="n">error_messages</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;invalid_login&#39;</span><span class="p">:</span> <span class="s2">&quot;请输入正确的用户名或密码，并确认验证码正确&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;inactive&#39;</span><span class="p">:</span> <span class="s2">&quot;账户未激活&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># clean是AuthenticationForm原有的方法，在此我只是进行了修改覆盖</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span> <span class="ow">and</span> <span class="n">token</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span> <span class="o">=</span> <span class="n">authenticate</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                                           <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error_messages</span><span class="p">[</span><span class="s1">&#39;invalid_login&#39;</span><span class="p">],</span>
+                    <span class="n">code</span><span class="o">=</span><span class="s1">&#39;invalid_login&#39;</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">username_field</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">},</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">confirm_login_allowed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span></code></pre></figure>
+
+<p>你现在应该修改urls来告诉Django你要使用自己的模版~在这里偷一下懒→_→需要了解关于修改模版的同学请移步<a href="http://www.ibm.com/developerworks/cn/opensource/os-django-admin/index.html">这里</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="c1"># /mysite/urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">accounts.forms</span> <span class="kn">import</span> <span class="n">CustomAuthenticationForm</span>
+
+<span class="c1"># 修改login页面url</span>
+<span class="n">adminurls</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span>
+<span class="n">adminurls</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^login/$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">login</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;authentication_form&#39;</span><span class="p">:</span> <span class="n">CustomAuthenticationForm</span><span class="p">},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="c1"># Examples:</span>
+    <span class="c1"># url(r&#39;^$&#39;, &#39;nktc.views.home&#39;, name=&#39;home&#39;),</span>
+    <span class="c1"># url(r&#39;^blog/&#39;, include(&#39;blog.urls&#39;)),</span>
+
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">adminurls</span><span class="p">)),</span>
+<span class="p">)</span></code></pre></figure>
+
+<h3 id="实现动态验证">实现动态验证</h3>
+
+<p>到此为止，你已经完成了对token字段的添加，接下来就是检验token是否有效，通过阅读Django官方文档对这里的说明，自定义的Backend应该包含至少Authenticate和get_user两个方法，然后在settings中添加</p>
+
+<blockquote>
+  <p>AUTHENTICATION_BACKENDS = (‘accounts.backends.CustomBackend’,)</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="c1"># /mysite/accounts/backends.py</span>
+<span class="kn">from</span> <span class="nn">accounts.models</span> <span class="kn">import</span> <span class="n">CustomUser</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="k">class</span> <span class="nc">CustomBackend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">use_token</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">vaild_token</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">user</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">use_token</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">user</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">except</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span></code></pre></figure>
+
+<h2 id="the-end">The End</h2>
+
+<p>嘛~终于做完了自己的用户系统~还有一点小激动呢</p>
+
+
+        <div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES * * */
+		    var disqus_shortname = 'albus12138';
+		    
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <div class="sidenav">
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/blog/why-blog">我为什么写博客？</a></li>
+            
+            
+        
+        </ul>
+
+        <h2>Coding</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/coding/python-re">Python正则表达式</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/xctf-carnival-wp">XCTF嘉年华体验赛 Re部分WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/gctf-wp">GCTF Re&Mobile WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/python-requests">Requests模块</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/iscc-2017-wp">ISCC2017 WriteUp</a></li>
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+        </ul>
+
+        <h2>Bookmarks</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/bookmarks/ddos">免费DDOS攻击测试工具</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking-2">网络流量攻击的危害</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking">网络流量攻击</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></li>
+            
+            
+        
+        </ul>
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

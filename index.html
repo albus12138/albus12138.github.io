@@ -1,0 +1,47 @@
+---
+layout: home
+--- 
+
+<div class="index-content blog">
+    <div class="section">
+        <ul class="artical-list">
+        {% for post in paginator.posts %}
+            <li>
+                <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+                <div class="title-desc">{{ post.description }}</div>
+            </li>   
+        {% endfor %}
+        </ul>
+
+        {% if paginator.total_pages > 1 %}
+        <div class="pagination">
+            {% if paginator.previous_page %}
+            <h2 class="left"><a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo; Prev</a></h2>
+            {% else %}
+            <h2 class="left" href="#">&laquo; Prev</h2>
+            {% endif %}
+
+            <div class="middle">
+                {% for page in (1..paginator.total_pages) %}
+                {% if page == paginator.page %}
+                <h2><em class="active">{{ page }}</em></h2>
+                {% elsif page == 1 %}
+                <h2><a href="{{ '/index.html' | replace: '//', '/' }}">{{ page }}</a></h2>
+                {% else %}
+                <h2><a href="{{ site.paginate_path | prepend: '/'| replace: '//', '/' | replace: ':num', page }}">{{ page }}{{ site.baseurl }}</a></h2>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if paginator.next_page %}
+            <h2 class="right"><a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Next &raquo;</a></h2>
+            {% else %}
+            <h2 class="right">Next &raquo;</h2>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="aside"></div>
+</div>
