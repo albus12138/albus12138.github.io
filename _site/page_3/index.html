@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <div class="index-content blog">
+    <div class="section">
+        <ul class="artical-list">
+        
+            <li>
+                <h2><a href="/coding/django-hosts">Django多域名</a></h2>
+                <div class="title-desc">将不同域名解析到不同app</div>
+            </li>   
+        
+            <li>
+                <h2><a href="/coding/git-notes">Git入门</a></h2>
+                <div class="title-desc">Git shell的一点记录0.0</div>
+            </li>   
+        
+            <li>
+                <h2><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></h2>
+                <div class="title-desc">学习Python编程的11个资源，收藏下来~~</div>
+            </li>   
+        
+            <li>
+                <h2><a href="/coding/django-user">Django用户系统扩展</a></h2>
+                <div class="title-desc">自己折腾Django用户系统的一点记录，也希望能帮助其他有同样问题的人~</div>
+            </li>   
+        
+            <li>
+                <h2><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></h2>
+                <div class="title-desc">缓冲区溢出攻击相关知识，Mark！</div>
+            </li>   
+        
+            <li>
+                <h2><a href="/blog/why-blog">我为什么写博客？</a></h2>
+                <div class="title-desc">写博客这个这么古老的行为，还有必要拿出来说吗，我看有。</div>
+            </li>   
+        
+        </ul>
+
+        
+        <div class="pagination">
+            
+            <h2 class="left"><a href="/page_2">&laquo; Prev</a></h2>
+            
+
+            <div class="middle">
+                
+                
+                <h2><a href="/index.html">1</a></h2>
+                
+                
+                
+                <h2><a href="/page_2">2</a></h2>
+                
+                
+                
+                <h2><em class="active">3</em></h2>
+                
+                
+            </div>
+
+            
+            <h2 class="right">Next &raquo;</h2>
+            
+        </div>
+        
+
+    </div>
+
+    <div class="aside"></div>
+</div>
+
+
+<script type="text/javascript">
+    $(function(){
+        var waitForFinalEvent = (function () {
+            var timers = {};
+            return function (callback, ms, uniqueId) {
+                if (!uniqueId) {
+                    uniqueId = "Don't call this twice without a uniqueId";
+                }
+                if (timers[uniqueId]) {
+                    clearTimeout (timers[uniqueId]);
+                }
+                timers[uniqueId] = setTimeout(callback, ms);
+            };
+        })();
+</script>
+
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

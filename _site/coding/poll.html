@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>使用Python投票 | Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/coding/poll" title="使用Python投票">使用Python投票</a></h1>
+        <p class="entry-date">2015-05-01</p>
+        <p>同学参加了一个比赛，有一个网投的环节，帮同学写了个程序→_→【好吧，刷票是不对的，但票数看的过去的又有几个人没刷呢。。。废话不多说了，进入正题：</p>
+
+<h2 id="正文">正文</h2>
+
+<h3 id="投票逻辑">投票逻辑</h3>
+
+<p>投票的实现可以有很多方法，如：socket、urllib2、httplib等等…在这里我选择了urllib2
+感谢比赛主办方没做图片验证码Orz不然。。。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="k">def</span> <span class="nf">get_user_agent</span><span class="p">():</span>
+<span class="lineno"> 4 </span>    <span class="n">user_agents</span> <span class="o">=</span> <span class="p">[</span>
+<span class="lineno"> 5 </span>        <span class="s2">&quot;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.71 Safari/537.1 LBBROWSER&quot;</span><span class="p">,</span>
+<span class="lineno"> 6 </span>        <span class="s2">&quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; QQBrowser/7.0.3698.400) &quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>        <span class="s2">&quot;Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; 360SE)&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>        <span class="s2">&quot;Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0b13pre) Gecko/20110307 Firefox/4.0b13pre&quot;</span><span class="p">,</span>
+<span class="lineno"> 9 </span>        <span class="s2">&quot;Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16&quot;</span><span class="p">,</span>
+<span class="lineno">10 </span>        <span class="s2">&quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)&quot;</span>
+<span class="lineno">11 </span>    <span class="p">]</span>
+<span class="lineno">12 </span>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">user_agents</span><span class="p">)</span>
+<span class="lineno">13 </span>
+<span class="lineno">14 </span><span class="k">def</span> <span class="nf">poll</span><span class="p">(</span><span class="n">proxy</span><span class="p">)</span>
+<span class="lineno">15 </span>    <span class="k">try</span><span class="p">:</span>
+<span class="lineno">16 </span>        <span class="c1">#使用代理IP</span>
+<span class="lineno">17 </span>        <span class="n">proxy_handler</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">({</span><span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="n">proxy</span><span class="p">})</span>
+<span class="lineno">18 </span>        <span class="n">opener</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">proxy_handler</span><span class="p">)</span>
+<span class="lineno">19 </span>        <span class="n">urllib2</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+<span class="lineno">20 </span>        <span class="n">request</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">&#39;http://example.com/vote/Vote?voteId=233&#39;</span><span class="p">)</span>
+<span class="lineno">21 </span>        <span class="c1">#模仿用户浏览器User-Agent，不必要，没有需求可以不加</span>
+<span class="lineno">22 </span>        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">,</span> <span class="n">user_agent</span><span class="p">())</span>
+<span class="lineno">23 </span>        <span class="c1">#添加Referer，不必要</span>
+<span class="lineno">24 </span>        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">&#39;Referer&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com/vote/Vote&#39;</span><span class="p">)</span>
+<span class="lineno">25 </span>        <span class="n">response</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="lineno">26 </span>        <span class="k">print</span> <span class="s2">&quot;Result </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="lineno">27 </span>        <span class="k">return</span> <span class="bp">True</span>
+<span class="lineno">28 </span>    <span class="k">except</span><span class="p">:</span>
+<span class="lineno">29 </span>        <span class="k">return</span> <span class="bp">False</span></code></pre></figure>
+
+<h3 id="获取代理">获取代理</h3>
+
+<p>网投基本上都是限制每个IP地址投票数或者是多长时间内投一票，所以我们要通过代理来隐藏我们的真实IP地址。你可以选择在一些网站上面购买免费的代理，或是写个爬虫去获取各种免费代理，百度上面搜索一下就有一堆这样的网站。因为程序运行过程中需要经常读写代理信息，所以使用数据库来存储这些数据，查询起来比较方便。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">sqlite</span><span class="o">,</span> <span class="nn">urllib2</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="k">def</span> <span class="nf">get_proxy</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="lineno"> 4 </span>    <span class="c1">#URL替换为你所购买的代理商提供的API，用num替换URL中的数量部分</span>
+<span class="lineno"> 5 </span>    <span class="n">response</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s1">&#39;URL&#39;</span><span class="p">)</span>
+<span class="lineno"> 6 </span>    <span class="n">html</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="lineno"> 7 </span>    <span class="c1">#通过正则将获取到的代理转换为列表，便于后续使用</span>
+<span class="lineno"> 8 </span>    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5})&#39;</span><span class="p">)</span>
+<span class="lineno"> 9 </span>    <span class="n">ip_list</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+<span class="lineno">10 </span>    <span class="c1">#存入数据库</span>
+<span class="lineno">11 </span>    <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">+</span><span class="s2">&quot;/ipAdress.db&quot;</span><span class="p">)</span>
+<span class="lineno">12 </span>    <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">13 </span>    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ip_list</span><span class="p">:</span>
+<span class="lineno">14 </span>        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where ip=&#39;http://</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">ip</span><span class="p">)</span>
+<span class="lineno">15 </span>        <span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]:</span>
+<span class="lineno">16 </span>            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into ipadress values (&#39;http://</span><span class="si">%s</span><span class="s2">&#39;,&#39;yes&#39;)&quot;</span> <span class="o">%</span> <span class="n">ip</span><span class="p">)</span>
+<span class="lineno">17 </span>            <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="lineno">18 </span>        <span class="k">print</span> <span class="s2">&quot;Proxy: </span><span class="si">%s</span><span class="s2"> is OK.&quot;</span> <span class="o">%</span> <span class="n">ip</span>
+<span class="lineno">19 </span>    <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">20 </span>    <span class="k">print</span> <span class="s2">&quot;Done!&quot;</span></code></pre></figure>
+
+<h3 id="多线程">多线程</h3>
+
+<p>因为某宝上面的收费代刷的速度实在逆天，简单的程序已经不能满足需求，所以有两个想法，一是多线程，二是非阻塞式【这个不会做TAT</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">thread</span><span class="o">,</span> <span class="nn">sqlite</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="c1">#投票逻辑线程</span>
+<span class="lineno"> 4 </span><span class="k">class</span> <span class="nc">PollThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+<span class="lineno"> 5 </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadID</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">proxy</span><span class="p">):</span>
+<span class="lineno"> 6 </span>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="lineno"> 7 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">threadID</span> <span class="o">=</span> <span class="n">threadID</span>
+<span class="lineno"> 8 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="lineno"> 9 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="lineno">10 </span>        <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">+</span><span class="s2">&quot;/ipAdress.db&quot;</span><span class="p">)</span>
+<span class="lineno">11 </span>        <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">12 </span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">proxy</span><span class="p">:</span>
+<span class="lineno">13 </span>            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;http&#39;</span><span class="p">]:</span>
+<span class="lineno">14 </span>                <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+<span class="lineno">15 </span>                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;update ipadress set status=&#39;no&#39; where ip=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="lineno">16 </span>        <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="lineno">17 </span>        <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">18 </span>
+<span class="lineno">19 </span>
+<span class="lineno">20 </span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="lineno">21 </span>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">!=</span> <span class="p">[]:</span>
+<span class="lineno">22 </span>            <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">+</span><span class="s2">&quot;/ipAdress.db&quot;</span><span class="p">)</span>
+<span class="lineno">23 </span>            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">24 </span>            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+<span class="lineno">25 </span>                <span class="k">if</span> <span class="ow">not</span> <span class="n">poll</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+<span class="lineno">26 </span>                    <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="lineno">27 </span>                    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;delete from ipadress where ip=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;http&quot;</span><span class="p">])</span>
+<span class="lineno">28 </span>                    <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="lineno">29 </span>                    <span class="n">new_proxy</span><span class="o">=</span><span class="p">[]</span>
+<span class="lineno">30 </span>                    <span class="k">while</span> <span class="n">new_proxy</span> <span class="o">==</span> <span class="p">[]:</span>
+<span class="lineno">31 </span>                        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where status=&#39;yes&#39; limit 1&quot;</span><span class="p">)</span>
+<span class="lineno">32 </span>                        <span class="n">new_proxy</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="lineno">33 </span>                        <span class="k">if</span> <span class="n">new_proxy</span> <span class="o">!=</span> <span class="p">[]:</span>
+<span class="lineno">34 </span>                            <span class="k">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: No Proxy To Use!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+<span class="lineno">35 </span>                            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;update ipadress set status=&#39;no&#39; where ip=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">new_proxy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+<span class="lineno">36 </span>                            <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="lineno">37 </span>                    <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">+=</span> <span class="p">[{</span><span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="n">new_proxy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]},]</span>
+<span class="lineno">38 </span>                    <span class="k">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: 10060 Error&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+<span class="lineno">39 </span>            <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">40 </span>        <span class="k">print</span> <span class="s2">&quot;Exiting thread </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+<span class="lineno">41 </span>        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">42 </span>
+<span class="lineno">43 </span><span class="c1">#获取代理线程</span>
+<span class="lineno">44 </span><span class="k">class</span> <span class="nc">GetProxyThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+<span class="lineno">45 </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadID</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="lineno">46 </span>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="lineno">47 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">threadID</span> <span class="o">=</span> <span class="n">threadID</span>
+<span class="lineno">48 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="lineno">49 </span>
+<span class="lineno">50 </span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="lineno">51 </span>        <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">+</span><span class="s2">&quot;/ipAdress.db&quot;</span><span class="p">)</span>
+<span class="lineno">52 </span>        <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">53 </span>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="lineno">54 </span>            <span class="k">try</span><span class="p">:</span>
+<span class="lineno">55 </span>                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where status=&#39;yes&#39;&quot;</span><span class="p">)</span>
+<span class="lineno">56 </span>                <span class="n">proxy_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="lineno">57 </span>                <span class="c1"># 建议设定数值为线程数*1.5</span>
+<span class="lineno">58 </span>                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">proxy_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+<span class="lineno">59 </span>                    <span class="n">get_proxy</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="lineno">60 </span>                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="lineno">61 </span>            <span class="k">except</span><span class="p">:</span>
+<span class="lineno">62 </span>                <span class="k">print</span> <span class="s2">&quot;Warning: Get Proxy Failed!!!!&quot;</span>
+<span class="lineno">63 </span>        <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">64 </span>
+<span class="lineno">65 </span>
+<span class="lineno">66 </span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="lineno">67 </span>    <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">+</span><span class="s2">&quot;/ipAdress.db&quot;</span><span class="p">)</span>
+<span class="lineno">68 </span>    <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">69 </span>    <span class="k">try</span><span class="p">:</span>
+<span class="lineno">70 </span>        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create table ipadress (ip varchar(21),status varchar(3))&quot;</span><span class="p">)</span>
+<span class="lineno">71 </span>    <span class="k">except</span><span class="p">:</span>
+<span class="lineno">72 </span>        <span class="k">pass</span>
+<span class="lineno">73 </span>
+<span class="lineno">74 </span>    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;update ipadress set status=&#39;yes&#39; where status=&#39;no&#39;&quot;</span><span class="p">)</span>
+<span class="lineno">75 </span>    <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="lineno">76 </span>    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where status=&#39;yes&#39;&quot;</span><span class="p">)</span>
+<span class="lineno">77 </span>    <span class="k">print</span> <span class="s2">&quot;Available Proxies: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+<span class="lineno">78 </span>
+<span class="lineno">79 </span>    <span class="n">thread_getproxy</span> <span class="o">=</span> <span class="n">GetProxyThread</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Thread-GetProxy&quot;</span><span class="p">)</span>
+<span class="lineno">80 </span>    <span class="n">thread_getproxy</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="lineno">81 </span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="lineno">82 </span>
+<span class="lineno">83 </span>    <span class="k">print</span> <span class="s2">&quot;Start polling...&quot;</span>
+<span class="lineno">84 </span>    <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="lineno">85 </span>    <span class="c1">#线程数</span>
+<span class="lineno">86 </span>    <span class="n">thread_ans</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="lineno">87 </span>    <span class="c1">#每个线程分配的代理数</span>
+<span class="lineno">88 </span>    <span class="n">proxy_ans</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="lineno">89 </span>    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where status=&#39;yes&#39;&quot;</span><span class="p">)</span>
+<span class="lineno">90 </span>    <span class="n">proxies</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="lineno">91 </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">proxies</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">thread_ans</span><span class="o">*</span><span class="n">proxy_ans</span><span class="p">:</span>
+<span class="lineno">92 </span>        <span class="n">get_proxy</span><span class="p">(</span><span class="n">thread_ans</span><span class="o">*</span><span class="n">proxy_ans</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">proxies</span><span class="p">))</span>
+<span class="lineno">93 </span>        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from ipadress where status=&#39;yes&#39;&quot;</span><span class="p">)</span>
+<span class="lineno">94 </span>        <span class="n">proxies</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="lineno">95 </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">thread_ans</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+<span class="lineno">96 </span>        <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PollThread</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Thread-Poll-&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="p">[{</span><span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="n">proxies</span><span class="p">[</span><span class="n">proxy_ans</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="n">proxy_ans</span><span class="o">*</span><span class="n">i</span><span class="p">]},]))</span>
+<span class="lineno">97 </span>    <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="lineno">98 </span>    <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+<span class="lineno">99 </span>        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></code></pre></figure>
+
+<h2 id="总结">总结</h2>
+
+<p>虽然使用多线程之后速度有了明显提升，但仍然比不上专业代刷QAQ，而且多线程对于服务器性能的压力比较大…我的服务器单核CPU吃不消+_+
+还有就是尝试做了一下日志文件，但查看起来很不方便，并没有想到更好的解决办法。</p>
+
+        <div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES * * */
+		    var disqus_shortname = 'albus12138';
+		    
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <div class="sidenav">
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/blog/why-blog">我为什么写博客？</a></li>
+            
+            
+        
+        </ul>
+
+        <h2>Coding</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/coding/python-re">Python正则表达式</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/xctf-carnival-wp">XCTF嘉年华体验赛 Re部分WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/gctf-wp">GCTF Re&Mobile WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/python-requests">Requests模块</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/iscc-2017-wp">ISCC2017 WriteUp</a></li>
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+        </ul>
+
+        <h2>Bookmarks</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/bookmarks/ddos">免费DDOS攻击测试工具</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking-2">网络流量攻击的危害</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking">网络流量攻击</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></li>
+            
+            
+        
+        </ul>
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

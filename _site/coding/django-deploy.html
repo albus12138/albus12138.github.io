@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    * Author:         Raphael__
+    -->
+    <meta charset="utf-8" />
+    <title>Django部署 | Raphael's Blog</title>
+    <meta name="author" content="Raphael" />
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="Raphael's Blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/css/default.css" type="text/css" />
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="home-menu">
+        <div class="home-icon-con">
+            <a class="home-menu-icon" href="/">Raphael</a>
+            <a class="home-follow" href="#" title="Contact Me">+</a>
+        </div>
+    </div>
+
+    <style type="text/css">
+    body { background:#e8e8e8; }
+    @media screen and (max-width: 750px){
+        body { background:#fff; }
+    }
+    @media screen and (max-width: 1020px){
+        body { background:#fff; }
+    }
+</style>
+
+<div id="content">
+    <div class="entry">
+        <h1 class="entry-title"><a href="/coding/django-deploy" title="Django部署">Django部署</a></h1>
+        <p class="entry-date">2015-05-17</p>
+        <p>这个Django项目前段时间用业余时间做了那么久…基本上完成了，现在终于到了部署到服务器上的时候啦~~~</p>
+
+<p>部署环境：</p>
+
+<ul>
+  <li>
+    <p>HTTP反向代理服务器—Nginx 1.015</p>
+  </li>
+  <li>
+    <p>数据库—Mysql 5.1.73</p>
+  </li>
+  <li>
+    <p>Python WSGI UNIX的HTTP服务器—Gunicorn 19.3.0</p>
+  </li>
+  <li>
+    <p>守护进程—Supervisor 3.1.3</p>
+  </li>
+</ul>
+
+<h2 id="安装过程">安装过程</h2>
+<h3 id="nginx">Nginx</h3>
+<p>1.通过yum安装</p>
+
+<pre><code>yum install nginx
+</code></pre>
+
+<p>2.修改nginx配置文件
+Django对于静态文件处理远不如Nginx，如果部署时还用Django处理静态文件就会影响的性能和安全性了。</p>
+
+<pre><code>#/etc/nginx/conf.d/default.conf
+
+server {
+    listen 80;
+    server_name example.com;
+	
+	#将所有请求转发至Django监听的本地端口
+    location / {
+            proxy_pass http://127.0.0.1:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+	#防盗链
+	location ~* \.(gif|jpg|png|swf|flv)$ {
+		valid_referers none blocked *.example.com;
+		if ($invalid_referer) {
+			rewrite ^/ http://www.example.com/403.html;
+			#return 404;
+		}
+	}
+
+	#处理静态文件(具体URL根据settings.py中的设置更改)
+    location /static/ {
+            alias /path/to/your/site/static/;
+            expires 24h;
+            access_log off;
+    }
+    location /media/ {
+            alias /path/to/your/site/media/;
+            expires 24h;
+            access_log off;
+    }
+} 3.测试配置文件是否存在错误
+
+nginx -t
+</code></pre>
+
+<p>4.重启nginx服务</p>
+
+<pre><code>service nginx restart
+</code></pre>
+
+<h3 id="mysql">Mysql</h3>
+<p>1.通过yum安装</p>
+
+<pre><code>yum install mysql-server
+</code></pre>
+
+<p>2.创建数据库
+关于Mysql用户密码的配置在此就不再多说了。</p>
+
+<pre><code>mysql
+
+#创建数据库时设置字符编码为utf8, 否则Django中会出现中文乱码
+mysql&gt; create database db_name default charset=utf8;
+</code></pre>
+
+<p>3.修改Django数据库设置</p>
+
+<pre><code>#settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'db_name',
+        'USER': 'username',
+        'PASSWORD': 'password',
+        'HOST': '127.0.0.1',
+        'PORT': '3306'
+    }
+}
+</code></pre>
+
+<h3 id="djangogunicorn">Django、Gunicorn</h3>
+<p>1.安装Django和Gunicorn</p>
+
+<pre><code>pip install django gunicorn gevent
+</code></pre>
+
+<p>2.通过Gunicorn启动Django</p>
+
+<pre><code>#gevent异步处理
+gunicorn mysite.wsgi:application -w 4 -k gevent -b localhost:8000
+</code></pre>
+
+<h3 id="supervisor">Supervisor</h3>
+<p>1.安装</p>
+
+<pre><code>pip install supervisor
+</code></pre>
+
+<p>2.修改配置</p>
+
+<pre><code>echo_supervisord_conf &gt; /etc/supervisord.conf
+
+#设置独立配置文件
+#在supervisord.conf末尾添加
+[include]
+files = /etc/supervisord/conf.d/*.conf
+
+mkdir /etc/supervisord
+mkdir /etc/supervisord/conf.d
+cd /etc/supervisord/conf.d
+
+#进程配置文件
+vi example.conf
+#example.conf
+[program:mysite]
+command=gunicorn mysite.wsgi:application -w 4 -k gevent -b localhost:8000
+directory = /path/to/mysite
+user=root
+stdout_logfile=/var/log/mysite/gunicorn_supervisor.log
+redirect_stderr=true
+</code></pre>
+
+<p>3.启动Supervisor</p>
+
+<pre><code>#读入配置文件
+supervisord -c /etc/supervisord.conf
+#启动服务
+service supervisord start
+#重新载入所有配置文件
+supervisorctl reread
+supervisorctl reload
+#启动
+supervisorctl start mysite
+</code></pre>
+
+        <div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES * * */
+		    var disqus_shortname = 'albus12138';
+		    
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <div class="sidenav">
+        <h2>Blog</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/blog/why-blog">我为什么写博客？</a></li>
+            
+            
+        
+        </ul>
+
+        <h2>Coding</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/coding/python-re">Python正则表达式</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/xctf-carnival-wp">XCTF嘉年华体验赛 Re部分WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/gctf-wp">GCTF Re&Mobile WriteUp</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/python-requests">Requests模块</a></li>
+            
+            
+        
+            
+            <li><a href="/coding/iscc-2017-wp">ISCC2017 WriteUp</a></li>
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+            
+            
+        
+        </ul>
+
+        <h2>Bookmarks</h2>
+        <ul class="artical-list">
+        
+        
+            
+            <li><a href="/bookmarks/ddos">免费DDOS攻击测试工具</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking-2">网络流量攻击的危害</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/network-traffic-hijacking">网络流量攻击</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/resouces-for-learn-python">学习Python编程的11个资源</a></li>
+            
+            
+        
+            
+            <li><a href="/bookmarks/buffer-overflow">缓冲区溢出攻击相关知识</a></li>
+            
+            
+        
+        </ul>
+    </div>
+</div>
+
+<script src="/js/post.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $('.home-follow').click(function(e){
+                e.preventDefault();
+            });
+        })
+        $(document).ready(function(){
+            var id = Math.floor(Math.random()*5)+1;
+            $(".aside").css("background-image","url(/images/bg-"+id+".jpg)");            
+        })
+    </script>
+</body>
+</html>

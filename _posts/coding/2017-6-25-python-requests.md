@@ -60,7 +60,7 @@ r = requests.delete("http://albus12138.github.io")
 
 添加URL参数，手动构造如`example.com/index?param=abc`的URL十分繁琐，在requests中可以使用params传入字典参数，自动生成带参数的URL
 
-{% highlight python %}
+{% highlight python linenos %}
 params = {"key1": "value1", "key2": "value2"}
 r = requests.get("http://albus12138.github.io", params=params)
 # 这里可以通过 r.url 获取生成好的URL
@@ -70,7 +70,7 @@ r = requests.get("http://albus12138.github.io", params=params)
 
 添加POST参数：
 
-{% highlight python %}
+{% highlight python linenos %}
 payload = {"key1": "value1", "key2": "value2"}
 r = requests.post("http://albus12138.github.io", data=payload)
 # r.text
@@ -80,7 +80,7 @@ r = requests.post("http://albus12138.github.io", data=payload)
 
 有时候我们想要请求的内容需要登陆后访问，如果手动添加cookie十分不便，这种情况下使用会话可以有效节省精力，专注于一些更重要的内容
 
-{% highlight python %}
+{% highlight python linenos %}
 sess = requests.Session()
 payload = {"usr": "albus", "pwd": "albus"}
 r = sess.post("http://albus12138.github.io/login", data=payload)
@@ -91,7 +91,7 @@ r = sess.get("http://albus12138.github.io/admin")
 
 如果想要使用代理，可以为请求添加`proxies`参数
 
-{% highlight python %}
+{% highlight python linenos %}
 proxies = {
 	"http": "http://10.10.1.10:3128",
 	"https": "https//10.10.1.10:3129",

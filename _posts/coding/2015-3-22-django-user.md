@@ -19,7 +19,7 @@ description: 自己折腾Django用户系统的一点记录，也希望能帮助�
 
 accounts是我app的名称，你可以改为你的app名称。
 
-{% highlight python %}
+{% highlight python linenos %}
 # /mysite/accounts/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -41,7 +41,7 @@ class CustomUser(AbstractUser, models.Model):
 
 做完这些，你会发现通过admin添加的用户无法登陆，这是因为Django在数据库中对密码进行了加密存储，不必担心，Django提供了make_password这个方法，你可以通过重写CustomUser.save_model来覆盖掉原有的行为
 
-{% highlight python %}
+{% highlight python linenos %}
 # /mysite/accounts/admin.py
 class CustomUserAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
@@ -64,7 +64,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 现在还不能看到添加的输入框，因为form中并没有定义token字段，你还要扩展一下登录表单，只需要继承AuthenticationForm就可以了。
 
-{% highlight python %}
+{% highlight python linenos %}
 # /mysite/accounts/forms.py
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
@@ -100,7 +100,7 @@ class CustomAuthenticationForm(AuthenticationForm, forms.Form):
 
 你现在应该修改urls来告诉Django你要使用自己的模版~在这里偷一下懒→_→需要了解关于修改模版的同学请移步[这里][]
 
-{% highlight python %}
+{% highlight python linenos %}
 # /mysite/urls.py
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
@@ -127,7 +127,7 @@ urlpatterns = patterns('',
 
 > AUTHENTICATION_BACKENDS = ('accounts.backends.CustomBackend',)
 
-{% highlight python %}
+{% highlight python linenos %}
 # /mysite/accounts/backends.py
 from accounts.models import CustomUser
 from django.utils import timezone
