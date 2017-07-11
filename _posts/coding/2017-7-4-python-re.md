@@ -82,4 +82,4 @@ re.split('\W+', 'Words, words, words.', 1)
 
 * obj.re - 匹配这个对象的字符串对象
 
-最后附上[官方文档][https://docs.python.org/3/library/re.html]
+最后附上[官方文档](https://docs.python.org/3/library/re.html)
