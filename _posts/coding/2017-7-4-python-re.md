@@ -52,6 +52,34 @@ re.split('\W+', 'Words, words, words.', 1)
 {% endhighlight %}
 注意：自3.1版本起支持flags，自3.5版本起不接受空正则表达式，如：`"^$"`
 
-* re.findall(*pattern, string, flags=0*)
+* re.findall(*pattern, string, flags=0*) - 返回一个列表，其中是字符串所有不重叠的子串，当没有任何匹配时，返回一个空列表
 
-** TO BE CONTINUED **
+* re.finditer(*pattern, string, flags=0*) - 返回一个结果列表的迭代器
+
+* re.sub(*pattern, repl, string, count=0, flags=0*) - 将string中符合pattern匹配的子串用repl替换，返回替换后的字符串，这里的repl可以是字符串，也可以是函数，如果是函数，匹配到的子串会作为参数传入函数
+
+* re.escape(pattern) - 对pattern中的一些特殊字符进行转义，使其满足正则表达式的要求
+
+* re.purge() - 清除之前缓存中的正则表达式
+
+0x02 返回对象的属性和方法
+
+* obj.expand(template) - 通过反斜杠+数字 `\1` 或为反斜杠命名 `\g<name>` 来标记要替换子串的位置，功能相当于 sub 函数
+
+* obj.group([group1, ...]) - 返回一个包含结果的元组，如果参数为0或空，则返回全部结果，其他情况下返回对应的结果
+
+* obj.groups(default=None) - 返回一个元组，包含所有匹配到的子串，若没有匹配到则为default的值
+
+* obj.groupdict(default=None) - 返回一个字典，其中key是正则中的命名，value为匹配到的值
+
+* obj.start() / obj.end() - 这个匹配对象在原字符串中的起/止位置
+
+* obj.span() - 以元组的形式返回子串的起止位置 `(start, end)`
+
+* obj.pos / obj.endpos - 传给re.match() / re.search() 的 pos / endpos 参数
+
+* obj.re - 匹配这个对象的正则表达式对象
+
+* obj.re - 匹配这个对象的字符串对象
+
+最后附上[官方文档][https://docs.python.org/3/library/re.html]
