@@ -38,7 +38,7 @@ description: Python正则表达式re模块介绍
 * re.fullmatch(*pattern, string, flags=0*) - 如果整个字符串匹配表达式，则返回一个对象，否则，返回 `None`，注：自3.4版本添加
 
 * re.split(*pattern, string, maxsplit=0, flags=0*)
-{% highlight python linenos %}
+{% highlight python %}
 re.split('\W+', 'Words, words, words.')
 # ['Words', 'words', 'words', '']
 

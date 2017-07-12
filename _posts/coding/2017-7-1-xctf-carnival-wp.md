@@ -24,7 +24,7 @@ description: XCTF嘉年华体验赛 RE题解
 
 不想动笔算的话就写个爆破脚本好了
 
-{% highlight python linenos %}
+{% highlight python %}
 for a in range(0, 10):
     for b in range(0, 10):
         for c in range(0, 10):
@@ -62,7 +62,7 @@ for a in range(0, 10):
 
 通过四个条件限制字符串长度，因为涉及到了unsigned int，这里选择用c++写爆破脚本，得出结果，username长度为8或12
 
-{% highlight C++ linenos %}
+{% highlight C++ %}
 #include <iostream>
 using namespace std;
 
@@ -97,7 +97,7 @@ DWORD是双字类型，长度为4字节，这里用DWORD从字符串中截取出
 
 首先是对字符进行检验，允许的字符为大小写字母和数字，然后同样是一个分段检验，这里用到一个伪随机，种子为打乱顺序的之前解出的username，写一个c++脚本输出一下伪随机的前十个值，与对应结果进行运算，即可得到password。
 
-{% highlight C++ linenos %}
+{% highlight C++ %}
 #include <iostream>
 #include <stdlib.h>
 using namespace std;

@@ -13,7 +13,7 @@ description: Python的各式装饰器
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(func):
     def _test():
         print 'Call the function %s().'%func.func_name
@@ -31,7 +31,7 @@ Call the function say().
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(func):
     def _test(*args,**kw):
         print 'Call the function %s().'%func.func_name
@@ -53,7 +53,7 @@ Call the function left().
 
 2.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(printResult=False):
     def _test(func):
         def __test():
@@ -100,7 +100,7 @@ TypeError: _test() takes exactly argument (0 given)
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(printResult=False):
     def _test(func):
         def __test(*args,**kw):
@@ -137,7 +137,7 @@ hello
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(cls):
     def _test():
         clsName=re.findall('(\w+)',repr(cls))[-1]
@@ -161,7 +161,7 @@ Call sy.__init().
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(cls):
     def _test(*args,**kw):
         clsName=re.findall('(\w+)',repr(cls))[-1]
@@ -188,7 +188,7 @@ Call sy.__init().
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(printValue=True):
     def _test(cls):
         def __test():
@@ -223,7 +223,7 @@ Call sy.__init().
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> def test(printValue=True):
     def _test(cls):
         def __test(*args,**kw):
@@ -263,7 +263,7 @@ Call sy.__init().
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,func):
         self._func=func
@@ -283,7 +283,7 @@ def say():
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,func):
         self._func=func
@@ -305,7 +305,7 @@ def left(Str,Len):
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,beforeinfo='Call function'):
         self.beforeInfo=beforeinfo
@@ -327,7 +327,7 @@ Call function
 
  或者：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,beforeinfo='Call function'):
         self.beforeInfo=beforeinfo
@@ -351,7 +351,7 @@ Call function
  
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,beforeinfo='Call function'):
         self.beforeInfo=beforeinfo
@@ -374,7 +374,7 @@ Call function
 
  或者：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,beforeinfo='Call function'):
         self.beforeInfo=beforeinfo
@@ -404,7 +404,7 @@ Call function
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,cls):
         self._cls=cls
@@ -428,7 +428,7 @@ class sy(object):
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,cls):
         self._cls=cls
@@ -455,7 +455,7 @@ class sy(object):
 
 1.被装饰对象无参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,printValue=False):
         self._printValue=printValue
@@ -485,7 +485,7 @@ value = 32
 
 2.被装饰对象有参数：
 
-{% highlight python linenos %}
+{% highlight python %}
 >>> class test(object):
     def __init__(self,printValue=False):
         self._printValue=printValue
