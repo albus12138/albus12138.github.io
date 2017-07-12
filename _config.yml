@@ -1,5 +1,5 @@
 markdown: kramdown
-highlighter: pygments
+highlighter: rouge
 paginate: 7
 paginate_path: "page_:num"
 permalink: /:categories/:title
