@@ -2,7 +2,7 @@
 layout: post
 title: Ubuntu 配置小结
 category: coding
-description: 
+description: 记录一下自己安装Ubuntu的过程吧
 ---
 
 ## 0x00 Installation
