@@ -22,13 +22,13 @@ description: Hough线变换提取图像中直线
 
 在霍夫变换中，采用极坐标系表示直线
 
-对于平面中的一个任意点(x<sub>0</sub>, y<sub>0</sub>)，可以将通过这个点的一族直线定义为 r<sub>θ</sub> = x<sub>0</sub> cosθ + y<sub>0</sub> sinθ ，所以，每一对(r<sub>θ</sub>, θ)组合就代表一条通过(x<sub>0</sub>, y<sub>0</sub>)的直线
+对于平面中的一个任意点(x<sup>0</sup>, y<sup>0</sup>)，可以将通过这个点的一族直线定义为 r<sup>θ</sup> = x<sup>0</sup> cosθ + y<sup>0</sup> sinθ ，所以，每一对(r<sup>θ</sup>, θ)组合就代表一条通过(x<sup>0</sup>, y<sup>0</sup>)的直线
 
-对于一个给定的(x<sub>0</sub>, y<sub>0</sub>)，我们可以画出 r<sub>θ</sub> 关于 θ 的图像，其中 r > 0 且 0 < θ < 2π
+对于一个给定的(x<sup>0</sup>, y<sup>0</sup>)，我们可以画出 r<sup>θ</sup> 关于 θ 的图像，其中 r > 0 且 0 < θ < 2π
 
 ![直线族](../../images/HoughLines/2.jpg)
 
-上图即为通过 x<sub>0</sub> = 8, y<sub>0</sub> = 6 的所有直线，再以同样的方法对其他两个点画出曲线，如下图
+上图即为通过 x<sup>0</sup> = 8, y<sup>0</sup> = 6 的所有直线，再以同样的方法对其他两个点画出曲线，如下图
 
 ![多条直线族](../../images/HoughLines/3.jpg)
 
