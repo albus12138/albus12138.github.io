@@ -150,6 +150,9 @@ h3.about {color:#777;margin-top:20px;font-size:22px;margin-bottom:10px}
 .home-contact { color:#fff; margin-top:2px; background:rgba(221,221,221,0.3);; padding:8px 0 7px; text-align:center; display:none;}
 .home-contact a { width:30px; display:inline-block; }
 .home-contact img { width:18px; }
+.contact-info {position: fixed;top:68px;left:15px;z-index:5; line-height:38px; padding:0 8px;color:#fff; font-size:18px;  background:rgba(221,221,221,0.3);}
+.contact-info a { text-decoration:none; }
+.contect-info img { width:18px; }
 
 @media screen and (max-width: 750px){
     body {font-size:14px;}

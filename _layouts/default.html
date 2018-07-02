@@ -23,13 +23,31 @@
             <a class="home-follow" href="#" title="Contact Me">+</a>
         </div>
     </div>
+    <div class="contact-info">
+        <div style="display: block;">
+            <img src="/images/gmail.png" height="18px">
+            <a href="mailto:albus.zly@gmail.com">albus.zly@gmail.com</a>
+        </div>
+        <div style="display: block;">
+            <img src="/images/github-box.png" height="18px">
+            <a href="https://github.com/albus12138">albus12138</a>
+        </div>
+    </div>
 
     {{ content }}
 
     <script type="text/javascript">
+        $('.contact-info').hide();
         $(function(){
             $('.home-follow').click(function(e){
+                if ($('.home-follow').text() == "+"){
+                    $('.home-follow').text("-");
+                }
+                else{
+                    $('.home-follow').text("+");
+                }
                 e.preventDefault();
+                $('.contact-info').fadeToggle(1000);
             });
         })
         $(document).ready(function(){
