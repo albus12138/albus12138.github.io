@@ -7,7 +7,7 @@ description: Fluent Python 内容小结
 
 ## Part 1: 序言
 
-### Chapter 1 | Python数据模型
+### Chapter 1 | 数据模型
 
 - `magic method` 是一种特殊的方法,形式如 `__getitem__`,可以让我们自定义的类具有一些原生类的效果,如 `len(obj)` 就是调用对象的 `__len__` 方法,如果我们自定义的类实现了这个方法,就可以通过 `len` 获得长度 [更多内容](https://docs.python.org/3/reference/datamodel.html#special-method-names)
 
@@ -17,7 +17,7 @@ description: Fluent Python 内容小结
 
 - 分类
 	- Container(容器) sequences & Flat(平坦) sequences
-		- list, tuple, collections.deque(Double-End Queue)
+		- list, tuple, collections.deque(Double-Ended Queue)
 		- str, bytes, bytearray, memoryview, array.array
 
 	- Mutable(可修改) sequences & Immutable(不可修改) sequences
@@ -69,5 +69,33 @@ description: Fluent Python 内容小结
 - +=问题
 	- `t = (1, 2, [10, 20]); t[2] += [30, 40]` 会引发一个TypeError,但t的值仍会被修改
 	- 所以,在不可变序列中放入一个可变类型是一个不明智的选择
+
+- 排序
+	- `obj.sort(key, reverse) or sorted(obj, key, reverse)` 其中 `sorted` 不改变原序列顺序
+	- `reverse`为真时,将降序排列,key是一个单参数函数,通过该函数返回值排序
+	- 二分查找 & 插入
+		- 因为排序操作付出的代价是很高的,所以在排序后保持序列有序就十分重要
+		- `bisect.bisect(haystack, needle)` 在 `haystack` 中查找探针应该插入的位置, 再通过 `haystack.insert(index, needle)` 将探针插入对应位置
+		- `bisect.indort(haystack, needle)` 会直接将探针插入序列,并且比两步操作更加迅速
+
+- 数组 (Array)
+	- 如果一个列表只包含数字,那么数组是一个很好的选择,数组比列表效率更高,同样支持可变序列的所有方法
+	- 快速存取: `frombytes` 和 `tofile`
+
+- MemoryViews (内存查看对象?)
+	- 受 NumPy 和 SciPy 启发产生,可以修改序列中部分内容而不影响其他部分,类似于C语音的指针
+	- 大概在大量数据处理时使用可以降低计算复杂度? 个人感觉日常用途不明
+
+- 双端队列 (Double-Ended Queue)
+	- 队列的设计目的是为了快速从端点插入或移除数据
+	- 双端队列在声明是需要显式声明最大长度,当队列中的元素达到最大长度后继续添加元素会从另一端移除元素
+	- 除了双端队列,Python标准库还实现了一些其他队列
+		- `queue` 线程安全的单端序列,在达到最大值后会等待移除而不是自动移除
+		- `multiprocessing` 提供了支持多进程的队列
+		- `asynio` 异步队列
+
+### Chapter 3 | 字典和集合
+
+
 
 <strong>To be Continued...</strong>
