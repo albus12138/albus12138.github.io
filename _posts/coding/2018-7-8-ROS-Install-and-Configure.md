@@ -55,3 +55,24 @@ source ~/.zshrc
 `sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential`
 
 到这为止, ROS的安装就基本结束了
+
+## 环境管理
+
+- 检查 ROS_ROOT 和 ROS_PACKAGE _PATH : `printenv | grep ROS`
+
+## 建立工作空间
+
+{% highlight shell %}
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws
+catkin_make
+
+source devel/setup.zsh
+echo $ROS_PACKAGE_PATH
+{% endhighlight %}
+
+catkin_make 是一个非常方便的用来创建工作空间的工具, 第一次运行时会在你的工作空间内生成一个CMakeList.txt符号链接, 以及build和devel文件夹, 在建立完工作空间后, 我们需要让我们的工作空间位于ROS环境的最顶端, 通过执行该工作空间下devel里面的setup完成, 这里我使用的是zsh, 如果你的终端时bash, 请使用setup.bash :-)
+
+如果工作空间配置正确, 你应该看到类似这样的输出: `/home/r4phael/catkin_ws/src:/opt/ros/kinetic/share`
+
+另外, 在整个过程中, 请使用系统自带的python环境, 我之前用pyenv装了多版本的python, 在建立工作空间时, 我终端的python解释器是自己装的3.6.5, 导致找不到catkin_pkg
