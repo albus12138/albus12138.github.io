@@ -102,7 +102,7 @@ description: Fluent Python 内容小结
 		- 可哈希对象 (Hashable)
 			- 所有原子级不可变的类型都可以计算哈希值,所以一个仅包含不可变类型的静态集总是可以哈希的,用户定义的类型默认时可哈希的,其哈希值是他们的 `id()`
 
-- 字典
+- 字典 (Dicts)
 	- 表达方式
 		- 从2.7开始字典的声明可以使用递推式构造 `{country: code for code, country in DIAL_CODES}` 其中 `DIAL_CODES = [(86, 'China'), ...]`
 	- 通过setdefault处理不存在的关键字
@@ -119,7 +119,7 @@ description: Fluent Python 内容小结
 - 不可变映射类型 (Immutable Mappings)
 	- 在我们需要维持一些字典内容不被误操作所改变时, 我们可以通过 `MappingProxy` 实现, 向 `MappingProxyType(obj)` 传入一个映射对象, 会返回一个只读映射对象, 这个只读对象会随着被传入的对象变化而变化, 但直接对该只读对象的操作不会生效, 更不会影响到原对象
 
-- 集合
+- 集合 (Sets)
 	- 集合是一个在 Python 历史中相对较新的内容, `set` 和 `frozenset` 在 Python 2.6 时被纳入内建类型
 	- 集合一个非常常见的功能就是去重, 集合内的所有元素是不重复的, 同时, 集合内的所有元素必须是可哈希的, `set` 本身是不可哈希的, 而 `frozenset` 是可哈希的, 所以可以在 `set` 中包含 `frozenset`
 	- 集合支持一些集合论的操作, 集合在记录检索方面具有极大的优势(代码简单且执行速度快), 假设你有两份很长的通讯录, 然后要比较这两份通讯录中重叠的条目数量, 集合就是一个很好的选择: `len(mailing_list_1 & mailing_list_2)`
@@ -136,5 +136,48 @@ description: Fluent Python 内容小结
 
 ### Chapter 4 | 文本和字节
 
+- 从 Python 3 开始, 文本和字节有了明确的界线, 隐式地将字节转换为文本不再存在
 
-<strong>To be Continued...</strong>
+- 字符 (Characters)
+	- 从 2015 年开始, 我们将字符定义为了一个 Unicode 字符, 所以你从 Python 3 str 中获得的是 Unicode 字符, 而你从 Python 2 str 中获取的是字节
+
+- 字节 (Bytes)
+	- 字节在 Python 3 中有两个类型, 不可变类型 `bytes` 和可变类型 `bytearray`, bytearray 在 Python 2.6 中作为 str 的别名被加入
+	- 表示方法: 尽管字节是一串数字, 但是一般还是会将其中 ASCII 字符和转义字符以字符形式显示, 其余用 \x00 这样的形式显示
+
+- 结构体 (Struct)
+	- 结构体可以按照规则将一串字节分解为一个元组, 如 `struct.unpack('<3s3sHH', packed_bytes)` 其中 < 代表小端序, 3s 代表长度为3的字节序列, H 代表 16-bits 数字
+
+- 编码器/解码器 (Encoders/Decoders)
+	- Python 发行版支持100余种编码, 每种编码有自己的名字和许多别名, 如 `utf_8` 有别名 `utf8 utf-8 U8` 等等
+	- str.encode(codec): 字符 编码为 字节
+	- str.decode(codec): 字节 解码为 字符 (这两个概念我混淆了很久Orz)
+
+- UnicodeEncodeError/UnicodeDecodeError
+	- 这两个错误可以说是 Python 2 里十分常见却难以排查的错误了, 引发这两个错误的原因就是在编码或解码的过程中, 某个字节在指定的编码中不存在对应的字符
+	- 要在程序中处理这两个错误, 我们可以通过 encode/decode 函数的 errors 参数来控制, 可供选择的参数有:
+		- strict: 默认参数, 会引发错误
+		- replace: 用 U+FFFD 替换没有找到的字符
+		- ignore: 忽略没有找到的字符
+
+- SyntaxError
+	- 由于 Python 3 的默认编码是 utf-8, Python 2 的默认编码是 ascii, 所以如果你的代码文件不是以对应编码保存, 并且没有声明编码的话, 在解释器读取代码时就会发生错误
+	- `# coding: cp1252` 在代码开头加上这一条, 解释器就会按照cp1252进行读取
+
+- 从 Python 3 开始, 可以使用非ASCII字符为变量命名了, 似乎并不利于与不同语言的人进行交流?
+
+- 如何检测一串字节的编码
+	- 没有办法准确得到结果, 你必须已知编码才能将字节转换为字符
+	- chardet.detect(bytes) 可以帮助你猜测一串字节的编码类型, 并给出可信度
+
+- 处理文本文件
+	- 推荐流程: 在读入时将字节转换为字符串, 在程序中仅处理字符串, 在输出时再编码为字节序列
+	- 注意: read 和 write 函数的默认编码均与系统编码一致, 如果在 windows 系统, 默认编码为 cp1252, 可以通过在打开文件时添加 encoding 参数控制输入输出编码
+
+- 关于默认编码
+	- GNU/Linux 和 OSX 中, 均为 utf-8
+	- Windows 中, python默认文件编码为 cp1252, 终端输入输出编码为 cp850, 系统默认编码为 utf-8, 文件系统编码为 mbcs (好混乱......)
+
+
+
+<strong>To be Continued... Last updated: Aug 1, 2018</strong>
