@@ -270,4 +270,4 @@ description: Fluent Python 内容小结
 
 - 关于字符串和字节的内容大概就是这些, 关于最后这几部分看的确实比较懵, 平时也很少深入接触 Unicode 相关的内容, 跟着书上的例子看个大概吧 Orz
 
-<strong>To be Continued... Last updated: Aug 1, 2018</strong>
+<strong>To be Continued... Last updated: Aug 2, 2018</strong>
