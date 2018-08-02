@@ -192,69 +192,69 @@ description: Fluent Python 内容小结
 			- ß 转换后为 ss8
 		- 对于 Python 3.4 来说, 共计 116 个字符会与 lower 产生的结果不同, 仅占全部 110,122 个字符的 0.11%
 
-	- 两个实用工具函数]
+	- 两个实用工具函数
 
-{% highlight python %}
-from unicodedata import normalize
+	{% highlight python %}
+	from unicodedata import normalize
 
-def nfc_equal(str1, str2):
-	return normalize('NFC', str1) == normalize('NFC', str2)
+	def nfc_equal(str1, str2):
+		return normalize('NFC', str1) == normalize('NFC', str2)
 
-def fold_equal(str1, str2):
-	return (normalize('NFC', str1).casefold() == normalize('NFC', str2).casefold())
-{% endhighlight %}
+	def fold_equal(str1, str2):
+		return (normalize('NFC', str1).casefold() == normalize('NFC', str2).casefold())
+	{% endhighlight %}
 
 	- 极限标准化
 		- 去除区分标志 (声调, 变音符号等等), 可以避免用户错误使用区分符号, 但也会大大降低搜索精度
 
-{% highlight python %}ighlight python %}
-import unicodedata
-import string
+	{% highlight python %}
+	import unicodedata
+	import string
 
-def shave_marks(txt):
-	norm_txt = unicodedata.normalize('NFD', txt)
-	shaved = ''.join(c for c in norm_txt if not unicodedata.combining(c))
-	return unicodedata.normalize('NFC', shaved)
+	def shave_marks(txt):
+		norm_txt = unicodedata.normalize('NFD', txt)
+		shaved = ''.join(c for c in norm_txt if not unicodedata.combining(c))
+		return unicodedata.normalize('NFC', shaved)
 
-def shave_marks_latin(txt):
-	norm_txt = unicodedata.normalize('NFD', txt)
-	latin_base = False
-	keepers = []
-	for c in norm_txt:
-		if unicodedata.combining(c) and latin_base:
-			continue  # ignore diacritic on Latin base char
-		keepers.append(c)
-		# if it isn't combining char, it's a new base char
-		if not unicodedata.combining(c):
-			latin_base = c in string.ascii_letters
-	shaved = ''.join(keepers)
-	return unicodedata.normalize('NFC', shaved)
+	def shave_marks_latin(txt):
+		norm_txt = unicodedata.normalize('NFD', txt)
+		latin_base = False
+		keepers = []
+		for c in norm_txt:
+			if unicodedata.combining(c) and latin_base:
+				continue  # ignore diacritic on Latin base char
+			keepers.append(c)
+			# if it isn't combining char, it's a new base char
+			if not unicodedata.combining(c):
+				latin_base = c in string.ascii_letters
+		shaved = ''.join(keepers)
+		return unicodedata.normalize('NFC', shaved)
 
-single_map = str.maketrans("""‚ƒ„†ˆ‹‘’“”•–—˜›""",
-						   """'f"*^<''""---~>""")
+	single_map = str.maketrans("""‚ƒ„†ˆ‹‘’“”•–—˜›""",
+							   """'f"*^<''""---~>""")
 
-multi_map = str.maketrans({
-	'€': '<euro>',
-	'…': '...',
-	'Œ': 'OE',
-	'™': '(TM)',
-	'œ': 'oe',
-	'‰': '<per mille>',
-	'‡': '**',
-})
+	multi_map = str.maketrans({
+		'€': '<euro>',
+		'…': '...',
+		'Œ': 'OE',
+		'™': '(TM)',
+		'œ': 'oe',
+		'‰': '<per mille>',
+		'‡': '**',
+	})
 
-multi_map.update(single_map)
-
-
-def dewinize(txt):
-	return txt.translate(multi_map)
+	multi_map.update(single_map)
 
 
-def asciize(txt):
-	no_marks = shave_marks_latin(dewinize(txt))
-	no_marks = no_marks.replace('ß', 'ss')
-	return unicodedata.normalize('NFKC', no_marks)
-{% endhighlight %}
+	def dewinize(txt):
+		return txt.translate(multi_map)
+
+
+	def asciize(txt):
+		no_marks = shave_marks_latin(dewinize(txt))
+		no_marks = no_marks.replace('ß', 'ss')
+		return unicodedata.normalize('NFKC', no_marks)
+	{% endhighlight %}
 
 - Unicode 字符排序
 	- 标准的对非 ASCII 排序的方法就是 `locale.strxfrm`, 在使用这个函数前, 要先设置语言和编码
