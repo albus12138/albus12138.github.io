@@ -178,6 +178,96 @@ description: Fluent Python 内容小结
 	- GNU/Linux 和 OSX 中, 均为 utf-8
 	- Windows 中, python默认文件编码为 cp1252, 终端输入输出编码为 cp850, 系统默认编码为 utf-8, 文件系统编码为 mbcs (好混乱......)
 
+- 字符串比较
+	- 标准化 Unicode
+		- 由于 Unicode 同一个字符可能存在不同的字节表达形式, 所以在比较前应先进行标准化 `unicodedata.normalize`
+		- NFC 将字节压缩, 产生最短的字符串
+		- NFD 将字节扩展, 将压缩字符扩展为基础字符和组合字符
+		- NFKC/NFKD 中的 K 代表 compatibility, 会更加严格进行转换, 如 ½ (U+00BD) 会被转换为 1/2, 4<sub>2</sub> 会被转换为 42, 所以在使用前应仔细考虑
 
+	- 大小写转换
+		- str.casefold() 是在 Python 3.3 中添加的新特性, 可以将字符转换为小写, 在纯 ASCII 字符串中与 str.lower() 效果相同
+		- 存在两个特例
+			- μ 转换后的字符与原字符看上去相同
+			- ß 转换后为 ss8
+		- 对于 Python 3.4 来说, 共计 116 个字符会与 lower 产生的结果不同, 仅占全部 110,122 个字符的 0.11%
+
+	- 两个实用工具函数
+	{% highlight python %}
+	from unicodedata import normalize
+
+	def nfc_equal(str1, str2):
+	    return normalize('NFC', str1) == normalize('NFC', str2)
+
+	def fold_equal(str1, str2):
+		return (normalize('NFC', str1).casefold() == normalize('NFC', str2).casefold())
+	{% endhighlight %}
+
+	- 极限标准化
+		- 去除区分标志 (声调, 变音符号等等), 可以避免用户错误使用区分符号, 但也会大大降低搜索精度
+		{% highlight python %}
+		import unicodedata
+		import string
+		
+		def shave_marks(txt):
+			norm_txt = unicodedata.normalize('NFD', txt)
+			shaved = ''.join(c for c in norm_txt if not unicodedata.combining(c))
+			return unicodedata.normalize('NFC', shaved)
+		
+		def shave_marks_latin(txt):
+			norm_txt = unicodedata.normalize('NFD', txt)
+			latin_base = False
+			keepers = []
+			for c in norm_txt:
+				if unicodedata.combining(c) and latin_base:
+					continue  # ignore diacritic on Latin base char
+				keepers.append(c)
+				# if it isn't combining char, it's a new base char
+				if not unicodedata.combining(c):
+					latin_base = c in string.ascii_letters
+			shaved = ''.join(keepers)
+			return unicodedata.normalize('NFC', shaved)
+
+		single_map = str.maketrans("""‚ƒ„†ˆ‹‘’“”•–—˜›""",
+								   """'f"*^<''""---~>""")
+
+		multi_map = str.maketrans({
+			'€': '<euro>',
+			'…': '...',
+			'Œ': 'OE',
+			'™': '(TM)',
+			'œ': 'oe',
+			'‰': '<per mille>',
+			'‡': '**',
+		})
+
+		multi_map.update(single_map)
+
+
+		def dewinize(txt):
+			return txt.translate(multi_map)
+
+
+		def asciize(txt):
+			no_marks = shave_marks_latin(dewinize(txt))
+			no_marks = no_marks.replace('ß', 'ss')
+			return unicodedata.normalize('NFKC', no_marks)
+		{% endhighlight %}
+
+- Unicode 字符排序
+	- 标准的对非 ASCII 排序的方法就是 `locale.strxfrm`, 在使用这个函数前, 要先设置语言和编码
+		- `locale.setlocale(locale.LC_COLLATE, <your locale>.<encoding>)`
+		- `sorted(data, key=locale.strxfrm)`
+	- 还有另一种方法可以对 Unicode 字符进行排序, 这是 Django 的开发者开发的库 `PyUCA`, 这个库目前仅支持 Python 3
+		- `coll = pyuca.Collator()`
+		- `sorted(data, key=coll.sort_key)`
+
+- Unicode 数据库
+	- 关于 unicodedata 的内容太多了, 书中也仅仅简单介绍了一点, [更多内容](https://docs.python.org/3/library/unicodedata.html)
+
+- 双模式 API
+	- 对于标准库的许多函数都可以接受字符串和字节参数, 并根据参数类型调整处理方法, 如 os 模块在接受一个字节类型的路径输入时返回的内容均为字节类型
+
+- 关于字符串和字节的内容大概就是这些, 关于最后这几部分看的确实比较懵, 平时也很少深入接触 Unicode 相关的内容, 跟着书上的例子看个大概吧 Orz
 
 <strong>To be Continued... Last updated: Aug 1, 2018</strong>
