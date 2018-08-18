@@ -276,4 +276,27 @@ description: Fluent Python 内容小结
 
 ### Chapter 5 | 头等函数
 
-<strong>To be Continued... Last updated: Aug 2, 2018</strong>
+- 函数式编程
+
+	- 头等函数 (first-class functions) 也就是说函数能像参数一样被传入另一个函数, 也能作为返回值被返回出来, 可以被存入变量或数据结构
+	- 接受以函数作为参数的函数称为高阶函数 (high-order functions)
+		- 典型的高阶函数就是 map, filter, reduce 这些函数绝大部分语言都有类似的实现, 可能名字不同
+
+- 匿名函数 lambda
+
+- 7 种可以调用的对象
+	- 用户定义函数
+	- 内建函数
+	- 内建方法
+	- 方法
+	- 类: 调用 `__new__` 和 `__init__`
+	- 类实例: 调用 `__call__`
+	- 生成器: 使用 yield 的函数或方法称为生成器, 生成器的调用过程和其他对象不一样, 在 14&16 章会有深入讨论
+
+- 用户定义可调用类型
+	- 通过定义 `__call__` 不仅是真正的函数对象, 任意的对象可以做出类似函数的行为
+
+- 函数内省 (Function Introspection)
+	- 除了 `__doc__` 方法, 函数对象还有许多其他属性, 可以通过 `dir(obj)` 来查看
+
+<strong>To be Continued... Last updated: Aug 17, 2018</strong>
