@@ -1,0 +1,13 @@
+import struct
+
+data = b"\x8F\xAA\x85\xA0\x48\xAC\x40\x95\xB6\x16\xBE\x40\xB4\x16\x97\xB1\xBE\xBC\x16\xB1\xBC\x16\x9D\x95\xBC\x41\x16\x36\x42\x95\x95\x16\x40\xB1\xBE\xB2\x16\x36\x42\x3D\x3D\x49"
+
+udata = struct.unpack(">" + "B" * len(data), data)
+
+s = ""
+
+for i in range(0, len(udata)):
+    ans = ( ((udata[i] & 0xAA) >> 1) | (2 * (udata[i] & 0x55)) ) & 0xFF
+    s += chr(ans - 9)
+
+print(s)
