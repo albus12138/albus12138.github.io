@@ -108,6 +108,18 @@ description: 逆向练习 hackme.inndy.tw
 
 这道题目的解密过程分为 2 步, 第一步是将输入的key与一些限定条件进行比较, 其中有两个等式, 要求其中一个为质数且是斐波那契数列中的一个值, 这一步可以通过 z3 求解器求出, 注意数据类型的长度, 存在溢出情况, 此外部分条件存在多解, 只有一个解可以满足所有条件, 得到正确的 key 之后就可以通过 junk_data 解密flag
 
+## 0x09 unpackme
 
-## 这几天做了这几道题, 集中更新一下wp, 后续还会更新做题进度
+- 题目文件: [unpackme.exe](../../images/inndy/unpackme.exe)
+
+- 分值: 200 pts
+
+- FLAG{H0w dO yOU 7urn th1s 0n???}
+
+- [exp_unpackme.py](../../images/inndy/unpackme.exe)
+
+这道题从文件名就可以看出是个加了壳的题, 用 exeinfo 检测说是修改过的 upx 壳, 用 upx 直接脱失败, 然后是用 esp 定律手动脱壳, 应该是我技术的问题吧, 之前也没怎么练过手动脱壳, 脱出来的文件不能执行, 好在可以用ida分析了, 然后通过字符串搜索找到关键函数 sub_40BBB0, 首先是用 CSP 做了加密, 搜加密 id 0x8003 发现是 md5, 可以看出是以 md5 值与密文以及输入字符串的第一个字符循环异或得到flag, 这里有个问题就是通过 md5 查明文, 从 [cmd5](http://www.cmd5.com/) 查到了一个收费记录, 然后在 [somd5](https://www.somd5.com/) 查到了明文, 但是计算明文md5和给出的并不一致, 又去 [CrackStation](https://crackstation.net/) 查到了明文记录, 发现 somd5 没有显示完全, 缺少了最后几位...
+
+
+## 这几天做了这几道题, 集中更新一下wp, 后续还会更新做题进度, 最后更新 8.28
 
