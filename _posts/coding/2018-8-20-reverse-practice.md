@@ -120,6 +120,29 @@ description: 逆向练习 hackme.inndy.tw
 
 这道题从文件名就可以看出是个加了壳的题, 用 exeinfo 检测说是修改过的 upx 壳, 用 upx 直接脱失败, 然后是用 esp 定律手动脱壳, 应该是我技术的问题吧, 之前也没怎么练过手动脱壳, 脱出来的文件不能执行, 好在可以用ida分析了, 然后通过字符串搜索找到关键函数 sub_40BBB0, 首先是用 CSP 做了加密, 搜加密 id 0x8003 发现是 md5, 可以看出是以 md5 值与密文以及输入字符串的第一个字符循环异或得到flag, 这里有个问题就是通过 md5 查明文, 从 [cmd5](http://www.cmd5.com/) 查到了一个收费记录, 然后在 [somd5](https://www.somd5.com/) 查到了明文, 但是计算明文md5和给出的并不一致, 又去 [CrackStation](https://crackstation.net/) 查到了明文记录, 发现 somd5 没有显示完全, 缺少了最后几位...
 
+## 0x0A mov
+
+- 题目文件: [mov](../../images/inndy/mov)
+
+- 分值: 200 pts
+
+- FLAG{M0VFuscAtoR_15_ann0ying}
+
+- [exp_mov.py](../../images/inndy/exp_mov.py)
+
+之前已经见过几次 movfuscator, 每次都觉得能不能做出来全看玄学, 或者硬肛汇编, 我的汇编水平还不足以支撑我硬肛 Orz 拿到题目看到是 movfuscator 混淆之后首先试了一下有没有正确flag输出, 发现并没有, 然后用 intel pin 插桩计算指令数, 发现执行指令数收到是否正确以及长度影响, 然后在试的过程中发现了程序并不检测flag长度, 可以通过这样爆破
+
+## 0x0B a-maze
+
+- 题目文件: [maze.zip](../../images/inndy/maze.zip)
+
+- 分值: 200 pts
+
+- FLAG{W41k 410n3 1n m4z3 15 d4ng3r0u5, y0u m1gh7 n07 f1nd w4y r3v3r53}
+
+- [exp_maze.py](../../images/inndy/exp_maze.py)
+
+flag的检验算法很简单, 但是似乎并不好写逆向算法, 并且存在多条分支, 所以采用了递归的方式, 成功解出flag
 
 ## 这几天做了这几道题, 集中更新一下wp, 后续还会更新做题进度, 最后更新 8.28
 
