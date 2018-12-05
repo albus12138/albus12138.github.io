@@ -299,4 +299,19 @@ description: Fluent Python 内容小结
 - 函数内省 (Function Introspection)
 	- 除了 `__doc__` 方法, 函数对象还有许多其他属性, 可以通过 `dir(obj)` 来查看
 
-<strong>To be Continued... Last updated: Aug 17, 2018</strong>
+- 参数传递
+	- 仅关键词参数: 在 Python 3 中, 可以通过在一个可选的关键词前加入一个 `*arg` 参数, 使该参数后的关键词参数仅为能被关键词传递, 如: `func(a, *, b)`, 这个关键词参数并不需要指定一个默认值, 在这个例子中 `b` 仅能通过关键词传递, 因为 `*` 接收了所有除关键词参数以外的参数
+	- 检查函数参数: 可以通过默认的 `__code__` 对象来检查参数信息，但不是很清晰，更推荐使用 `inspect.Signature` 对象来检查函数信息
+	- 参数类型声明: `def clip(text:str, max_len:'int > 0'=80) -> str: ...` 这些对于参数数据类型的声明仅仅用于提示调用者, python不会对传入的参数进行类型检查, 可以通过 `__annotations__` 查看声明信息, 前面提到的 signature 函数同样可以查看这些信息
+
+- 为函数式编程提供的模块
+	- operator
+		- 在函数式编程中, 用函数而不是运算符会更加方便, 在传统的函数式编程中, 你可以通过 `reduce, map, filter` 来将一个函数应用于一个序列
+		- 通过 `itemgetter` 和 `attrgetter` 可以获取序列中的某个元素, 如用于排序等等
+		- 此外, 可以使用 `methodcaller` 来调用一些除运算符以外的函数, 例如: `hiphenate = methodcaller('replace', ' ', '-')` 可以通过调用 hiphenate 将字符串中的空格替换为 '-'
+	- functools.partial
+		- partial 函数可以用于固定某些参数, 以便通过 reduce 调用该函数, 例如:`picture = partial(tag, 'img', cls='pic-frame')` 生成的 picture 函数固定了第一个参数为 img, 基于关键字的 cls 参数为 pic-frame
+
+- 这一章讲解了一些 Python 函数式编程的基础, 函数可以被赋值给变量, 可以存入任何数据结构中, 可以被作为参数传入其他函数
+
+<strong>To be Continued... Last updated: Dec 4, 2018</strong>
