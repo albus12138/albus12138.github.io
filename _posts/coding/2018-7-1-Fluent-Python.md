@@ -367,6 +367,15 @@ d1(d2(func()))
 - 含参数的装饰器:含参数的装饰器一般是通过装饰器工厂(Decorator Factory)实现，通过根据传入参数不同，返回不同的装饰器函数
 
 ```
+def register(active=True):
+    def decorator(func):
+        if active:
+		    do_something()
+        else:
+            do_something_else()
+        return func
+    return decorator
+
 @register(active=True)
 def func():
     pass
@@ -376,6 +385,6 @@ def func():
 
 ## Part 4: 面向对象
 
-### 对象的引用，可变性和回收
+### Chapter 8 | 对象的引用，可变性和回收
 
 <strong>To be Continued... Last updated: Jan 22, 2019</strong>
