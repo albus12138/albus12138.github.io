@@ -128,6 +128,16 @@ description: 记录一下自己安装Ubuntu的过程吧
         * 字体通过注册表改到了Ubuntu里安装的文泉驿微体黑
         * 启动后可以登录，但是进入消息列表界面后就会崩溃，显示引发崩溃的是dwrite.dll，用原装的库替换也还是会崩溃
     + 附上基于AppImage打包的[Wine-QQ-TIM](https://github.com/askme765cs/Wine-QQ-TIM)
+    + **Update: 后来找到了更好用的工具集 [Deepin-Wine-Ubuntu](https://github.com/wszqkzqk/deepin-wine-ubuntu)**
+
+## 0x04 其他工具
+- htop: 更好用的系统资源监视器
+- System Monitor: 通知栏显示系统资源情况
+- Anbox: 安卓虚拟机
+- Arronax: 创建start图标
+- Kazam: 录屏
+- unar: 压缩包解压, 解决unzip乱码问题
+- Joplin: Markdown编辑器
 
 
 到这里基本的应用和配置就完成了，剩下的就是安装自己习惯的开发环境了。这篇小结到这里就结束了，之前也尝试过几次Ubuntu，希望这次可以长期生活在Ubuntu下OwO。
