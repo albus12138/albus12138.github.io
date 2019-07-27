@@ -1,3 +1,5 @@
+2018-4-30-live-in-ubuntu
+
 ---
 layout: post
 title: Ubuntu 配置小结
@@ -138,6 +140,12 @@ description: 记录一下自己安装Ubuntu的过程吧
 - Kazam: 录屏
 - unar: 压缩包解压, 解决unzip乱码问题
 - Joplin: Markdown编辑器
-
+- Nixnote: 印象笔记Linux版
+- Kdenlive: 视频剪辑
+- SMPlaye: 播放器
+- GitKraken: git客户端
+- Foxit Reader: PDF阅读器
+- CuteCom: 串口助手
+- Httrack: 静态站点克隆
 
 到这里基本的应用和配置就完成了，剩下的就是安装自己习惯的开发环境了。这篇小结到这里就结束了，之前也尝试过几次Ubuntu，希望这次可以长期生活在Ubuntu下OwO。
